@@ -15,12 +15,24 @@ public class Player : MonoBehaviour
 
         moveDirection = new Vector3(moveX, 0, moveZ).normalized;
 
-        
         transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
 
+        Bounds cubeBounds = currentCube.GetComponent<Renderer>().bounds;
+        float minX = cubeBounds.min.x;
+        float maxX = cubeBounds.max.x;
+        float minZ = cubeBounds.min.z;
+        float maxZ = cubeBounds.max.z;
 
-        float xPos = Mathf.Clamp(currentCube.transform.position.x, -4.75f, 4.75f);
-        float zPos = Mathf.Clamp(currentCube.transform.position.z, -4.75f, 4.75f);
+        float xPos = Mathf.Clamp(transform.position.x, minX, maxX);
+        float zPos = Mathf.Clamp(transform.position.z, minZ, maxZ);
         transform.position = new Vector3(xPos, transform.position.y, zPos);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.transform.tag == "Enemy")
+        {
+            Destroy(collision.gameObject);
+        }
     }
 }
