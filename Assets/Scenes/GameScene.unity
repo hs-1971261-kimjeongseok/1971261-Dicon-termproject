@@ -746,7 +746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 15
-  currentCube: {fileID: 316406732}
+  currentPosition: {fileID: 0}
 --- !u!135 &252779469
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1405,8 +1405,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 397502732}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 20, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1426,7 +1426,7 @@ Transform:
   - {fileID: 1274369166}
   - {fileID: 1204321375}
   - {fileID: 1461620067}
-  m_Father: {fileID: 2046582653}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &417944146
 GameObject:
@@ -3427,6 +3427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e256c015989b44a488949b06a774bddf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CubeMap: {fileID: 2046582652}
   allCubes:
   - map:
     - {fileID: 316406732}
@@ -3579,6 +3580,7 @@ MonoBehaviour:
   - {fileID: 1064606946}
   - {fileID: 507619298}
   camMovement: {fileID: 1274229439}
+  shouldRotateCube: 0
   BulletDodgeGamePrefab: {fileID: 7337236263946837138, guid: eee2bb556b962fc4696d29725fad28d7, type: 3}
 --- !u!82 &913614611
 AudioSource:
@@ -8109,7 +8111,6 @@ Transform:
   m_Children:
   - {fileID: 179620440}
   - {fileID: 1942323730}
-  - {fileID: 397502733}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2052390286
@@ -8508,3 +8509,4 @@ SceneRoots:
   - {fileID: 913614609}
   - {fileID: 2046582653}
   - {fileID: 1203316650}
+  - {fileID: 397502733}
