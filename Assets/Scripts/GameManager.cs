@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -27,30 +28,39 @@ public class GameManager : MonoBehaviour
     public CamMovement camMovement;
 
     private int currentPlayerIndex;
-    private int[][] cubeMusics;
+    private int[][] cubeMusicIndices;
+    private int nextPlayerIndex;
+    private bool isChoosingDirection = false;
+
+    public GameObject BulletDodgeGamePrefab; // 피하기 게임 프리팹
+
+    private Games currentGame;
 
     void Start()
     {
         allCubes[0].setArray(currentCubes);
         audioSource = GetComponent<AudioSource>();
-        currentPlayerIndex = 6;
-        cubeMusics = new int[16][];
-        initializeCubeMusics();
+        cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
+        InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
+        currentPlayerIndex = 0;
+        nextPlayerIndex = currentPlayerIndex;
         StartGame();
     }
-    void initializeCubeMusics()
+
+    void InitializeCubeMusicIndices()
     {
         for (int i = 0; i < 16; i++)
         {
-            cubeMusics[i] = new int[] { 0, Random.Range(1, 5), Random.Range(5, 9) };
+            cubeMusicIndices[i] = new int[] { 0, Random.Range(1, 5), Random.Range(5, 9) };
         }
     }
+
     void StartGame()
     {
-        PlayMusic(new int[] { 0, 3, 7 });
+        PlayMusic(cubeMusicIndices[currentPlayerIndex]);
         SetPlayerPosition(currentPlayerIndex);
 
-        StartCoroutine(ChangePlayerPositionRoutine());
+        StartCoroutine(GameRoutine());
     }
 
     void PlayMusic(int[] indices)
@@ -78,9 +88,24 @@ public class GameManager : MonoBehaviour
 
         camMovement.targetPosition = currentCubes[index].transform;
         camMovement.StartMoving();
+
+        // 이전에 실행 중이던 게임을 중지하고 제거
+        if (currentGame != null)
+        {
+            currentGame.GameStop();
+            Destroy(currentGame.gameObject);
+        }
+
+        // 새로운 게임을 현재 큐브에 인스턴스화하고 시작
+        GameObject gameInstance = Instantiate(BulletDodgeGamePrefab);
+        gameInstance.transform.localScale = Vector3.one;
+        gameInstance.transform.position = new Vector3(planePositions[index].position.x, 0, planePositions[index].position.z);
+        gameInstance.transform.parent = this.transform;
+        currentGame = gameInstance.GetComponent<Games>();
+        currentGame.GameStart();
     }
 
-    int[] getAdjacent(int index)
+    int[] GetAdjacent(int index)
     {
         List<int> adjacent = new List<int>();
 
@@ -95,20 +120,61 @@ public class GameManager : MonoBehaviour
         return adjacent.ToArray();
     }
 
-    IEnumerator ChangePlayerPositionRoutine()
+    IEnumerator GameRoutine()
     {
         while (true)
         {
-            yield return new WaitForSeconds(9f);
+            // 6.666초 동안 게임 진행
+            yield return new WaitForSeconds(6.666f);
 
-            // 인접한 큐브 중 하나를 선택하여 이동
-            int[] adjacent = getAdjacent(currentPlayerIndex);
-            int newCube = Random.Range(0, adjacent.Length);
-            currentPlayerIndex = adjacent[newCube];
+            if (currentGame != null)
+            {
+                currentGame.GameStop();
+            }
+
+            // 2.333초 동안 방향키 입력 대기
+            isChoosingDirection = true;
+            float elapsedTime = 0f;
+            while (elapsedTime < 2.333f)
+            {
+                HandleDirectionInput();
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            isChoosingDirection = false;
+
+            // 1초 동안 플레이어 위치 변경
+            yield return new WaitForSeconds(1f);
+            currentPlayerIndex = nextPlayerIndex;
             SetPlayerPosition(currentPlayerIndex);
 
-            yield return new WaitForSeconds(1f);
-            PlayMusic(cubeMusics[currentPlayerIndex]);
+            // 음악 재생
+            PlayMusic(cubeMusicIndices[currentPlayerIndex]);
+
+        }
+    }
+
+    void HandleDirectionInput()
+    {
+        if (!isChoosingDirection) return;
+
+        int[] adjacent = GetAdjacent(currentPlayerIndex);
+
+        if (Input.GetKeyDown(KeyCode.UpArrow) && adjacent.Contains(currentPlayerIndex - 4))
+        {
+            nextPlayerIndex = currentPlayerIndex - 4;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && adjacent.Contains(currentPlayerIndex + 4))
+        {
+            nextPlayerIndex = currentPlayerIndex + 4;
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) && adjacent.Contains(currentPlayerIndex - 1))
+        {
+            nextPlayerIndex = currentPlayerIndex - 1;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && adjacent.Contains(currentPlayerIndex + 1))
+        {
+            nextPlayerIndex = currentPlayerIndex + 1;
         }
     }
 }
