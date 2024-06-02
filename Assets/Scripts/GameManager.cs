@@ -129,33 +129,50 @@ public class GameManager : MonoBehaviour
 
     IEnumerator RotateCubeRoutine(Vector3 targetRotation)
     {
-        camMovement.transform.SetParent(CubeMap.transform, true);
-        Quaternion camRotation = camMovement.transform.rotation;
+        // 현재 카메라 위치와 회전 저장
+        Vector3 originalCamPosition = camMovement.transform.position;
+        Quaternion originalCamRotation = camMovement.transform.rotation;
+
+        // 새로운 피봇 위치에 빈 GameObject 생성
+        GameObject pivotObject = new GameObject("PivotObject");
+        pivotObject.transform.position = currentCubes[currentPlayerIndex].transform.position;
+        pivotObject.transform.SetParent(currentCubes[currentPlayerIndex].transform, true);
+
+        // 카메라를 빈 GameObject의 자식으로 설정
+        camMovement.transform.SetParent(pivotObject.transform, true);
 
         Quaternion startRotation = CubeMap.transform.rotation;
         Quaternion endRotation = Quaternion.Euler(targetRotation);
-        float duration = 0.5f; // 1초 동안 회전
+        float duration = 0.5f;
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
             CubeMap.transform.rotation = Quaternion.Slerp(startRotation, endRotation, elapsed / duration);
 
+            // 카메라가 반대 방향으로 회전하도록 설정
+            pivotObject.transform.localRotation = Quaternion.Slerp(startRotation, Quaternion.Euler(-targetRotation.x, 0, -targetRotation.z), elapsed / duration);
+
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        //CubeMap.transform.rotation = endRotation;
-        camMovement.transform.rotation = camRotation;
-        camMovement.transform.parent = null;
+        CubeMap.transform.rotation = endRotation;
 
-        CubeMap.transform.rotation = Quaternion.Euler(0, 0, 0);
+        // 카메라를 원래 위치와 회전으로 복구
+        camMovement.transform.SetParent(null);
+        camMovement.transform.position = originalCamPosition;
+        camMovement.transform.rotation = originalCamRotation;
+
+        // 빈 GameObject 삭제
+        Destroy(pivotObject);
 
         currentPlayerIndex = nextPlayerIndex;
         camMovement.targetPosition = planePositions[currentPlayerIndex];
         camMovement.StartMoving(true);
-       
     }
+
+
 
     int nextSide = 0;
     IEnumerator GameRoutine()
@@ -191,7 +208,7 @@ public class GameManager : MonoBehaviour
                 // 큐브 회전
                 Vector3 targetRotation = GetCubeRotation();
                 yield return RotateCubeRoutine(targetRotation);
-                //allCubes[nextSide].setArray(currentCubes);
+                allCubes[nextSide].setArray(currentCubes);
                 
 
 
@@ -234,11 +251,11 @@ public class GameManager : MonoBehaviour
         }
         else if (nextPlayerIndex == currentPlayerIndex + 3) // 왼쪽에서 오른쪽으로 이동
         {
-            targetRotation = new Vector3(0, 0, -90); // 동쪽 면으로 회전
+            targetRotation = new Vector3(0, 0, 90); // 동쪽 면으로 회전
         }
         else if (nextPlayerIndex == currentPlayerIndex - 3) // 오른쪽에서 왼쪽으로 이동
         {
-            targetRotation = new Vector3(0, 0, 90); // 서쪽 면으로 회전
+            targetRotation = new Vector3(0, 0, -90); // 서쪽 면으로 회전
         }
 
         return targetRotation;
