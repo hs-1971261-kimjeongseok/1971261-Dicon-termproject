@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
         if (!shouldRotateCube)
         {
             camMovement.targetPosition = planePositions[index];
-            camMovement.StartMoving();
+            camMovement.StartMoving(false);
         }
         
 
@@ -129,6 +129,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator RotateCubeRoutine(Vector3 targetRotation)
     {
+        camMovement.transform.SetParent(CubeMap.transform, true);
+        Quaternion camRotation = camMovement.transform.rotation;
+
         Quaternion startRotation = CubeMap.transform.rotation;
         Quaternion endRotation = Quaternion.Euler(targetRotation);
         float duration = 0.5f; // 1초 동안 회전
@@ -137,12 +140,21 @@ public class GameManager : MonoBehaviour
         while (elapsed < duration)
         {
             CubeMap.transform.rotation = Quaternion.Slerp(startRotation, endRotation, elapsed / duration);
+
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         //CubeMap.transform.rotation = endRotation;
+        camMovement.transform.rotation = camRotation;
+        camMovement.transform.parent = null;
+
         CubeMap.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        currentPlayerIndex = nextPlayerIndex;
+        camMovement.targetPosition = planePositions[currentPlayerIndex];
+        camMovement.StartMoving(true);
+       
     }
 
     int nextSide = 0;
@@ -182,9 +194,7 @@ public class GameManager : MonoBehaviour
                 //allCubes[nextSide].setArray(currentCubes);
                 
 
-                currentPlayerIndex = nextPlayerIndex;
-                camMovement.targetPosition = planePositions[currentPlayerIndex];
-                camMovement.StartMoving();
+
                 // 0.5초 동안 플레이어 위치 변경
                 yield return new WaitForSeconds(0.5f);
                 SetPlayerPosition(currentPlayerIndex);
@@ -195,7 +205,7 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(1f);
                 currentPlayerIndex = nextPlayerIndex;
                 camMovement.targetPosition = planePositions[currentPlayerIndex];
-                camMovement.StartMoving();
+                camMovement.StartMoving(false);
                 SetPlayerPosition(currentPlayerIndex);
             }
 

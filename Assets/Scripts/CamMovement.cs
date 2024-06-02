@@ -27,11 +27,20 @@ public class CamMovement : MonoBehaviour
 
     private void Start()
     {
-        StartMoving();
+        StartMoving(false);
     }
 
-    public void StartMoving()
+    public void StartMoving(bool a)
     {
-        isMoving = true;
+        if ((a))
+        {
+            Vector3 targetPos = targetPosition.position + new Vector3(0, 16.48f, 0);
+            transform.position = targetPos;
+        }
+        else
+        {
+            isMoving = true;
+        }
+        
     }
 }
