@@ -19,6 +19,8 @@ public class MapArray
 
 public class GameManager : MonoBehaviour
 {
+    public int currentStage = 0;
+    public GameObject Environment;//외부 배경
     public GameObject CubeMap; // 전체 큐브들의 중심 위치
     public MapArray[] allCubes; // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
     public GameObject[] currentCubes = new GameObject[16];
@@ -43,6 +45,7 @@ public class GameManager : MonoBehaviour
     private Games currentGame;
 
     private int nextSpawnpoint = 0;
+    
 
     void setCubetextures()
     {
@@ -55,6 +58,124 @@ public class GameManager : MonoBehaviour
                 renderer.material = textures[UnityEngine.Random.Range(0, 5)];
             }
         }
+    }
+    int decideStage(int curstage)
+    {
+        
+        switch (curstage)
+        {
+            case 0:// 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
+                switch (nextSpawnpoint)//위3 아래0 좌2 우1
+                {
+                    case 3:
+                        nextSpawnpoint = 1;
+                        return 3;
+                        break;
+                    case 0:
+                        nextSpawnpoint = 1;
+                        return 4;
+                        break;
+                    case 2:
+                        nextSpawnpoint = 1;
+                        return 1;
+                        break;
+                    case 1:
+                        nextSpawnpoint = 1;
+                        return 2;
+                        break;
+                }
+                break;
+            case 1:// 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
+                switch (nextSpawnpoint)//위3 아래0 좌2 우1
+                {
+                    case 3:
+                        return 3;
+                        break;
+                    case 0:
+                        return 4;
+                        break;
+                    case 2:
+                        return 5;
+                        break;
+                    case 1:
+                        return 0;
+                        break;
+                }
+                break;
+            case 2:// 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
+                switch (nextSpawnpoint)//위3 아래0 좌2 우1
+                {
+                    case 3:
+                        nextSpawnpoint = 1;
+                        return 3;
+                        break;
+                    case 0:
+                        nextSpawnpoint = 3;
+                        return 4;
+                        break;
+                    case 2:
+                        nextSpawnpoint = 3;
+                        return 0;
+                        break;
+                    case 1:
+                        nextSpawnpoint = 1;
+                        return 5;
+                        break;
+                }
+                break;
+            case 3:// 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
+                switch (nextSpawnpoint)//위3 아래0 좌2 우1
+                {
+                    case 3:
+                        return 5;
+                        break;
+                    case 0:
+                        return 0;
+                        break;
+                    case 2:
+                        return 1;
+                        break;
+                    case 1:
+                        return 2;
+                        break;
+                }
+                break;
+            case 4:// 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
+                switch (nextSpawnpoint)//위3 아래0 좌2 우1
+                {
+                    case 3:
+                        return 0;
+                        break;
+                    case 0:
+                        return 5;
+                        break;
+                    case 2:
+                        return 1;
+                        break;
+                    case 1:
+                        return 2;
+                        break;
+                }
+                break;
+            case 5:// 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
+                switch (nextSpawnpoint)//위3 아래0 좌2 우1
+                {
+                    case 3:
+                        return 4;
+                        break;
+                    case 0:
+                        return 3;
+                        break;
+                    case 2:
+                        return 1;
+                        break;
+                    case 1:
+                        return 2;
+                        break;
+                }
+                break;
+        }
+        return 0;
     }
 
     void Start()
@@ -156,8 +277,13 @@ public class GameManager : MonoBehaviour
 
     IEnumerator RotateCubeRoutine(Vector3 targetRotation)
     {
+        
+
         camMovement.gameObject.transform.parent = CubeMap.transform;
         player.gameObject.transform.parent = CubeMap.transform;
+        Environment.transform.parent = CubeMap.transform;
+        Quaternion startEnvRotation = Environment.transform.rotation;
+
         RotateAroundPivot cubeRotate = CubeMap.GetComponent<RotateAroundPivot>();
 
         Quaternion startRotation = CubeMap.transform.rotation;
@@ -174,10 +300,36 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
+        int nextStage = decideStage(currentStage);
+        switch (nextStage)
+        {
+            case 0:
+                Environment.transform.rotation = Quaternion.Euler(0, 0, 0);
+                break;
+            case 1:
+                Environment.transform.rotation = Quaternion.Euler(0, 0, -90);
+                break;
+            case 2:
+                Environment.transform.rotation = Quaternion.Euler(0, 0, 90);
+                break;
+            case 3:
+                Environment.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                break;
+            case 4:
+                Environment.transform.rotation = Quaternion.Euler(90, 0, 0);
+                break;
+            case 5:
+                Environment.transform.rotation = Quaternion.Euler(180, 0, 0);
+                break;
+        }
+        currentStage = nextStage;
+        Environment.transform.parent = null;
+
         CubeMap.transform.rotation = Quaternion.Euler(0,0,0);
 
         camMovement.gameObject.transform.parent = null;
         player.gameObject.transform.parent= null;
+        
         player.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
         currentPlayerIndex = nextPlayerIndex;
         camMovement.targetPosition = planePositions[currentPlayerIndex];
@@ -235,6 +387,29 @@ public class GameManager : MonoBehaviour
             }
             else
             {
+                Environment.transform.parent = CubeMap.transform;
+                switch (currentStage)
+                {
+                    case 0:
+                        Environment.transform.rotation = Quaternion.Euler(0, 0, 0);
+                        break;
+                    case 1:
+                        Environment.transform.rotation = Quaternion.Euler(0, 0, -90);
+                        break;
+                    case 2:
+                        Environment.transform.rotation = Quaternion.Euler(0, 0, 90);
+                        break;
+                    case 3:
+                        Environment.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                        break;
+                    case 4:
+                        Environment.transform.rotation = Quaternion.Euler(90, 0, 0);
+                        break;
+                    case 5:
+                        Environment.transform.rotation = Quaternion.Euler(180, 0, 0);
+                        break;
+                }
+                Environment.transform.parent = null;
                 // 1초 동안 플레이어 위치 변경
                 yield return new WaitForSeconds(1f);
                 currentPlayerIndex = nextPlayerIndex;
@@ -243,6 +418,8 @@ public class GameManager : MonoBehaviour
                 SetPlayerPosition(currentPlayerIndex);
                 
             }
+
+            
 
             player.GetComponent<Player>().canMove = true;
 
@@ -292,6 +469,7 @@ public class GameManager : MonoBehaviour
             if (adjacent.Contains(currentPlayerIndex - 4))
             {
                 Debug.Log("up");
+                shouldRotateCube = false;
                 nextPlayerIndex = currentPlayerIndex - 4;
             }
             else
@@ -307,7 +485,7 @@ public class GameManager : MonoBehaviour
             nextSpawnpoint = 0;
             if (adjacent.Contains(currentPlayerIndex + 4))
             {
-
+                shouldRotateCube = false;
                 nextPlayerIndex = currentPlayerIndex + 4;
             }
             else
@@ -323,6 +501,7 @@ public class GameManager : MonoBehaviour
             if (adjacent.Contains(currentPlayerIndex - 1))
             {
                 nextPlayerIndex = currentPlayerIndex - 1;
+                shouldRotateCube = false;
             }
             else
             {
@@ -337,6 +516,7 @@ public class GameManager : MonoBehaviour
             if (adjacent.Contains(currentPlayerIndex + 1))
             {
                 nextPlayerIndex = currentPlayerIndex + 1;
+                shouldRotateCube = false;
             }
             else
             {
