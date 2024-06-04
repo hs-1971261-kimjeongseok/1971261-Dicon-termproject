@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] currentCubes = new GameObject[16];
     public AudioClip[] musics; // 0은 항상 플레이됨, 1~4 중 하나와 5~8 중 하나가 플레이됨
     public Transform[] planePositions = new Transform[16];
+    public MapArray[] spawnPoints;//플레이어 스폰 위치
     public GameObject player;
     private AudioSource audioSource;
     public AudioSource[] tmp;
@@ -35,12 +36,30 @@ public class GameManager : MonoBehaviour
     private bool isChoosingDirection = false;
     public bool shouldRotateCube = false; // 큐브 회전 여부
 
+    public Material[] textures;
+
     public GameObject BulletDodgeGamePrefab; // 피하기 게임 프리팹
 
     private Games currentGame;
 
+    private int nextSpawnpoint = 0;
+
+    void setCubetextures()
+    {
+        for (int k = 0; k < allCubes.Length; k++) 
+        {
+
+            for(int i=0;i< allCubes[k].map.Length;i++)
+            {
+                MeshRenderer renderer = allCubes[k].map[i].GetComponent<MeshRenderer>();
+                renderer.material = textures[UnityEngine.Random.Range(0, 5)];
+            }
+        }
+    }
+
     void Start()
     {
+        setCubetextures();
         allCubes[0].setArray(currentCubes);
         audioSource = GetComponent<AudioSource>();
         cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
@@ -61,7 +80,7 @@ public class GameManager : MonoBehaviour
     void StartGame()
     {
         PlayMusic(cubeMusicIndices[currentPlayerIndex]);
-        SetPlayerPosition(currentPlayerIndex);
+        SetPlayerPosition(currentPlayerIndex,true);
 
         StartCoroutine(GameRoutine());
     }
@@ -84,9 +103,17 @@ public class GameManager : MonoBehaviour
         tmp[1].volume = 0.1f;
     }
 
-    void SetPlayerPosition(int index)
+    void SetPlayerPosition(int index, bool first = false)
     {
-        player.transform.position = planePositions[index].position;
+        
+        if (!first)
+        {
+            player.transform.position = spawnPoints[index].map[nextSpawnpoint].transform.position;
+        }
+        else
+        {
+            player.transform.position = planePositions[index].position;
+        }
         player.GetComponent<Player>().currentPosition = planePositions[index];
 
         if (!shouldRotateCube)
@@ -172,7 +199,10 @@ public class GameManager : MonoBehaviour
                 currentGame.GameStop();
             }
 
+
             // 2.333초 동안 방향키 입력 대기
+            player.GetComponent<Player>().canMove = false;
+            player.transform.position = spawnPoints[currentPlayerIndex].map[UnityEngine.Random.Range(0, 4)].transform.position;
             isChoosingDirection = true;
             float elapsedTime = 0f;
             while (elapsedTime < 2.333f)
@@ -183,7 +213,7 @@ public class GameManager : MonoBehaviour
             }
             isChoosingDirection = false;
 
-            player.GetComponent<Player>().canMove = false;
+           
             
             if (shouldRotateCube)
             {
@@ -195,12 +225,12 @@ public class GameManager : MonoBehaviour
                 Vector3 targetRotation = GetCubeRotation();
                 yield return RotateCubeRoutine(targetRotation);
                 //allCubes[nextSide].setArray(currentCubes);
-                
 
 
+                SetPlayerPosition(currentPlayerIndex);
                 // 0.5초 동안 플레이어 위치 변경
                 yield return new WaitForSeconds(0.5f);
-                SetPlayerPosition(currentPlayerIndex);
+                
                 
             }
             else
@@ -257,7 +287,8 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            
+            player.transform.position = spawnPoints[currentPlayerIndex].map[0].transform.position;
+            nextSpawnpoint = 3;
             if (adjacent.Contains(currentPlayerIndex - 4))
             {
                 Debug.Log("up");
@@ -272,8 +303,11 @@ public class GameManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
+            player.transform.position = spawnPoints[currentPlayerIndex].map[3].transform.position;
+            nextSpawnpoint = 0;
             if (adjacent.Contains(currentPlayerIndex + 4))
             {
+
                 nextPlayerIndex = currentPlayerIndex + 4;
             }
             else
@@ -284,6 +318,8 @@ public class GameManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
+            player.transform.position = spawnPoints[currentPlayerIndex].map[1].transform.position;
+            nextSpawnpoint = 2;
             if (adjacent.Contains(currentPlayerIndex - 1))
             {
                 nextPlayerIndex = currentPlayerIndex - 1;
@@ -296,6 +332,8 @@ public class GameManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
+            player.transform.position = spawnPoints[currentPlayerIndex].map[2].transform.position;
+            nextSpawnpoint = 1;
             if (adjacent.Contains(currentPlayerIndex + 1))
             {
                 nextPlayerIndex = currentPlayerIndex + 1;
