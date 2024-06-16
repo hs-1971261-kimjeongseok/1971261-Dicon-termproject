@@ -186,7 +186,7 @@ public class GameManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
         InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
-        currentPlayerIndex = 5;
+        currentPlayerIndex = 0;
         nextPlayerIndex = currentPlayerIndex;
         StartGame();
     }
@@ -340,6 +340,7 @@ public class GameManager : MonoBehaviour
 
 
     int nextSide = 0;
+    int tmpDir = -1;
     IEnumerator GameRoutine()
     {
         while (true)
@@ -355,7 +356,8 @@ public class GameManager : MonoBehaviour
 
             // 2.333초 동안 방향키 입력 대기
             player.GetComponent<Player>().canMove = false;
-            player.transform.position = spawnPoints[currentPlayerIndex].map[UnityEngine.Random.Range(0, 4)].transform.position;
+            tmpDir = UnityEngine.Random.Range(0, 4);
+            player.transform.position = spawnPoints[currentPlayerIndex].map[tmpDir].transform.position;
             isChoosingDirection = true;
             float elapsedTime = 0f;
             while (elapsedTime < 2.333f)
@@ -433,78 +435,113 @@ public class GameManager : MonoBehaviour
 
     
 
-    void HandleDirectionInput()
+    void HandleDirectionInput() // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
     {
         if (!isChoosingDirection) return;
 
         int[] adjacent = GetAdjacent(currentPlayerIndex);
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || tmpDir == 0)
         {
-            player.transform.position = spawnPoints[currentPlayerIndex].map[0].transform.position;
-            nextSpawnpoint = 3;
-            if (adjacent.Contains(currentPlayerIndex - 4))
+            if(currentStage == 3 && !adjacent.Contains(currentPlayerIndex - 4))
             {
-                Debug.Log("up");
-                shouldRotateCube = false;
-                nextPlayerIndex = currentPlayerIndex - 4;
+                tmpDir = 1;
             }
             else
             {
-                Debug.Log("upa");
-                nextDir = 0;
-                nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
-                shouldRotateCube = true;
+                tmpDir = -1;
+                if (adjacent.Contains(currentPlayerIndex - 4))
+                {
+                    Debug.Log("up");
+                    shouldRotateCube = false;
+                    nextPlayerIndex = currentPlayerIndex - 4;
+                }
+                else
+                {
+                    Debug.Log("upa");
+                    nextDir = 0;
+                    nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
+                    shouldRotateCube = true;
+                }
+                player.transform.position = spawnPoints[currentPlayerIndex].map[0].transform.position;
+                nextSpawnpoint = 3;
             }
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || tmpDir == 1)
         {
-            player.transform.position = spawnPoints[currentPlayerIndex].map[3].transform.position;
-            nextSpawnpoint = 0;
-            if (adjacent.Contains(currentPlayerIndex + 4))
+            if(currentStage == 4 && !adjacent.Contains(currentPlayerIndex + 4))
             {
-                shouldRotateCube = false;
-                nextPlayerIndex = currentPlayerIndex + 4;
+                tmpDir = 0;
             }
             else
             {
-                nextDir = 1;
-                nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
-                shouldRotateCube = true;
+                tmpDir = -1;
+                if (adjacent.Contains(currentPlayerIndex + 4))
+                {
+                    shouldRotateCube = false;
+                    nextPlayerIndex = currentPlayerIndex + 4;
+                }
+                else
+                {
+                    nextDir = 1;
+                    nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
+                    shouldRotateCube = true;
+                }
+                player.transform.position = spawnPoints[currentPlayerIndex].map[3].transform.position;
+                nextSpawnpoint = 0;
             }
+            
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) || tmpDir == 2)
         {
-            player.transform.position = spawnPoints[currentPlayerIndex].map[1].transform.position;
-            nextSpawnpoint = 2;
-            if (adjacent.Contains(currentPlayerIndex - 1))
+            if(currentStage == 1 && !adjacent.Contains(currentPlayerIndex - 1))
             {
+                tmpDir = 3;
+            }
+            else
+            {
+                tmpDir = -1;
+                if (adjacent.Contains(currentPlayerIndex - 1))
+                {
 
-                nextPlayerIndex = currentPlayerIndex - 1;
-                shouldRotateCube = false;
+                    nextPlayerIndex = currentPlayerIndex - 1;
+                    shouldRotateCube = false;
+                }
+                else
+                {
+                    nextDir = 2;
+                    nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
+                    shouldRotateCube = true;
+                }
+                player.transform.position = spawnPoints[currentPlayerIndex].map[1].transform.position;
+                nextSpawnpoint = 2;
             }
-            else
-            {
-                nextDir = 2;
-                nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
-                shouldRotateCube = true;
-            }
+           
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.RightArrow) || tmpDir == 3)
         {
-            player.transform.position = spawnPoints[currentPlayerIndex].map[2].transform.position;
-            nextSpawnpoint = 1;
-            if (adjacent.Contains(currentPlayerIndex + 1))
+            if(currentStage == 2 &&!adjacent.Contains(currentPlayerIndex + 1))
             {
-                nextPlayerIndex = currentPlayerIndex + 1;
-                shouldRotateCube = false;
+                tmpDir = 2;
             }
             else
             {
-                nextDir = 3;
-                nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
-                shouldRotateCube = true;
+                tmpDir = -1;
+                if (adjacent.Contains(currentPlayerIndex + 1))
+                {
+                    nextPlayerIndex = currentPlayerIndex + 1;
+                    shouldRotateCube = false;
+                }
+                else
+                {
+                    nextDir = 3;
+                    nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
+                    shouldRotateCube = true;
+                }
+                player.transform.position = spawnPoints[currentPlayerIndex].map[2].transform.position;
+                nextSpawnpoint = 1;
             }
+            
         }
     }
     int decideNextposition(int curPlayerIdx, int dir) // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
