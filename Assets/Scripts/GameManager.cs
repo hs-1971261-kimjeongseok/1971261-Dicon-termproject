@@ -45,8 +45,8 @@ public class GameManager : MonoBehaviour
     private Games currentGame;
 
     private int nextSpawnpoint = 0;
-    
 
+    
     void setCubetextures()
     {
         for (int k = 0; k < allCubes.Length; k++) 
@@ -185,7 +185,7 @@ public class GameManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
         InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
-        currentPlayerIndex = 0;
+        currentPlayerIndex = 5;
         nextPlayerIndex = currentPlayerIndex;
         StartGame();
     }
@@ -379,7 +379,7 @@ public class GameManager : MonoBehaviour
                 //allCubes[nextSide].setArray(currentCubes);
 
 
-                SetPlayerPosition(currentPlayerIndex);
+                SetPlayerPosition(currentPlayerIndex,true);
                 // 0.5초 동안 플레이어 위치 변경
                 yield return new WaitForSeconds(0.5f);
                 
@@ -475,7 +475,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 Debug.Log("upa");
-                nextPlayerIndex = currentPlayerIndex + 12;
+                nextPlayerIndex = decideNextposition(currentPlayerIndex, 0);
                 shouldRotateCube = true;
             }
         }
@@ -490,7 +490,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                nextPlayerIndex = currentPlayerIndex - 12;
+                nextPlayerIndex = decideNextposition(currentPlayerIndex, 1);
                 shouldRotateCube = true;
             }
         }
@@ -505,7 +505,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                nextPlayerIndex = currentPlayerIndex + 3;
+                nextPlayerIndex = decideNextposition(currentPlayerIndex, 2);
                 shouldRotateCube = true;
             }
         }
@@ -520,9 +520,102 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                nextPlayerIndex = currentPlayerIndex - 3;
+                nextPlayerIndex = decideNextposition(currentPlayerIndex, 3);
                 shouldRotateCube = true;
             }
         }
+    }
+    int decideNextposition(int curPlayerIdx, int dir) // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
+    {
+        //dir -> 0 up / 1 down / 2 left / 3 right
+        switch (currentStage)
+        {
+            case 0://위
+                switch (dir)
+                {
+                    case 0://위
+                        return curPlayerIdx + 12;
+                        break;
+                    case 1://아래
+                        return curPlayerIdx - 12;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx + 3;
+                        break;
+                    case 3://오
+                        return curPlayerIdx - 3;
+                        break;
+                }
+                break;
+            case 1://서
+                switch (dir)
+                {
+                    case 0://위
+                        return curPlayerIdx * 4;
+                        break;
+                    case 1://아래
+                        return (curPlayerIdx - 12) * 4;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx;
+                        break;
+                    case 3://오
+                        return curPlayerIdx - 3;
+                        break;
+                }
+                break;
+            case 2://동
+                switch (dir)
+                {
+                    case 0://위
+                        return (4 - curPlayerIdx) * 4 - 1;
+                        break;
+                    case 1://아래
+                        return (curPlayerIdx - 11) * 4 - 1;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx + 3;
+                        break;
+                    case 3://오
+                        return curPlayerIdx;
+                        break;
+                }
+                break;
+            case 3://북
+                switch (dir)
+                {
+                    case 0://위
+                        return curPlayerIdx;
+                        break;
+                    case 1://아래
+                        return curPlayerIdx - 12;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx / 4;
+                        break;
+                    case 3://오
+                        return (15 - curPlayerIdx) / 4;
+                        break;
+                }
+                break;
+            case 4://남
+                switch (dir)
+                {
+                    case 0://위
+                        return curPlayerIdx + 12;
+                        break;
+                    case 1://아래
+                        return curPlayerIdx;
+                        break;
+                    case 2://왼
+                        return (12 - curPlayerIdx) / 4 + 12;
+                        break;
+                    case 3://오
+                        return 12 + (curPlayerIdx / 4);
+                        break;
+                }
+                break;
+        }
+        return 0;
     }
 }
