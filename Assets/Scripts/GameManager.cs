@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,6 +47,7 @@ public class GameManager : MonoBehaviour
 
     private int nextSpawnpoint = 0;
     int nextDir = 0;
+    
 
     
     void setCubetextures()
@@ -207,6 +209,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GameRoutine());
     }
 
+    bool music10isplaying = false;
     void PlayMusic(int[] indices)
     {
         audioSource.Stop();
@@ -223,7 +226,14 @@ public class GameManager : MonoBehaviour
         tmp[1].clip = musics[indices[2]];
         tmp[1].Play();
         tmp[1].volume = 0.1f;
+
+        tmp[2].Stop();
+        if (!music10isplaying) { tmp[2].clip = musics[9]; music10isplaying = true; }
+        else { tmp[2].clip = musics[10]; music10isplaying = false; }
+        tmp[2].Play();
+        tmp[2].volume = 0.1f;
     }
+    
 
     void SetPlayerPosition(int index, bool first = false)
     {
@@ -340,6 +350,7 @@ public class GameManager : MonoBehaviour
 
 
     int nextSide = 0;
+    int randomDir = -1;
     IEnumerator GameRoutine()
     {
         while (true)
@@ -355,7 +366,8 @@ public class GameManager : MonoBehaviour
 
             // 2.333초 동안 방향키 입력 대기
             player.GetComponent<Player>().canMove = false;
-            player.transform.position = spawnPoints[currentPlayerIndex].map[UnityEngine.Random.Range(0, 4)].transform.position;
+            randomDir = UnityEngine.Random.Range(0, 4);
+            //player.transform.position = spawnPoints[currentPlayerIndex].map[randomDir].transform.position;
             isChoosingDirection = true;
             float elapsedTime = 0f;
             while (elapsedTime < 2.333f)
@@ -439,8 +451,9 @@ public class GameManager : MonoBehaviour
 
         int[] adjacent = GetAdjacent(currentPlayerIndex);
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || randomDir == 0)
         {
+            randomDir = -1;
             player.transform.position = spawnPoints[currentPlayerIndex].map[0].transform.position;
             nextSpawnpoint = 3;
             if (adjacent.Contains(currentPlayerIndex - 4))
@@ -457,8 +470,9 @@ public class GameManager : MonoBehaviour
                 shouldRotateCube = true;
             }
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || randomDir == 3)
         {
+            randomDir = -1;
             player.transform.position = spawnPoints[currentPlayerIndex].map[3].transform.position;
             nextSpawnpoint = 0;
             if (adjacent.Contains(currentPlayerIndex + 4))
@@ -473,8 +487,9 @@ public class GameManager : MonoBehaviour
                 shouldRotateCube = true;
             }
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) || randomDir == 1)
         {
+            randomDir = -1;
             player.transform.position = spawnPoints[currentPlayerIndex].map[1].transform.position;
             nextSpawnpoint = 2;
             if (adjacent.Contains(currentPlayerIndex - 1))
@@ -490,8 +505,9 @@ public class GameManager : MonoBehaviour
                 shouldRotateCube = true;
             }
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.RightArrow) || randomDir == 2)
         {
+            randomDir = -1;
             player.transform.position = spawnPoints[currentPlayerIndex].map[2].transform.position;
             nextSpawnpoint = 1;
             if (adjacent.Contains(currentPlayerIndex + 1))
