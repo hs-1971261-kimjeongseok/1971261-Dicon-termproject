@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     private Games currentGame;
 
     private int nextSpawnpoint = 0;
+    int nextDir = 0;
 
     
     void setCubetextures()
@@ -430,31 +431,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    Vector3 GetCubeRotation()
-    {
-        // 새로운 면으로 큐브 전체 회전을 설정합니다.
-        Vector3 targetRotation = Vector3.zero;
-
-        if (nextPlayerIndex == currentPlayerIndex + 12) // 위에서 아래로 이동
-        {
-            // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
-            targetRotation = new Vector3(90, 0, 0); // 남쪽 면으로 회전
-        }
-        else if (nextPlayerIndex == currentPlayerIndex - 12) // 아래에서 위로 이동
-        {
-            targetRotation = new Vector3(-90, 0, 0); // 북쪽 면으로 회전
-        }
-        else if (nextPlayerIndex == currentPlayerIndex + 3) // 왼쪽에서 오른쪽으로 이동
-        {
-            targetRotation = new Vector3(0, 0, 90); // 동쪽 면으로 회전
-        }
-        else if (nextPlayerIndex == currentPlayerIndex - 3) // 오른쪽에서 왼쪽으로 이동
-        {
-            targetRotation = new Vector3(0, 0, -90); // 서쪽 면으로 회전
-        }
-
-        return targetRotation;
-    }
+    
 
     void HandleDirectionInput()
     {
@@ -475,7 +452,8 @@ public class GameManager : MonoBehaviour
             else
             {
                 Debug.Log("upa");
-                nextPlayerIndex = decideNextposition(currentPlayerIndex, 0);
+                nextDir = 0;
+                nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
                 shouldRotateCube = true;
             }
         }
@@ -490,7 +468,8 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                nextPlayerIndex = decideNextposition(currentPlayerIndex, 1);
+                nextDir = 1;
+                nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
                 shouldRotateCube = true;
             }
         }
@@ -500,12 +479,14 @@ public class GameManager : MonoBehaviour
             nextSpawnpoint = 2;
             if (adjacent.Contains(currentPlayerIndex - 1))
             {
+
                 nextPlayerIndex = currentPlayerIndex - 1;
                 shouldRotateCube = false;
             }
             else
             {
-                nextPlayerIndex = decideNextposition(currentPlayerIndex, 2);
+                nextDir = 2;
+                nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
                 shouldRotateCube = true;
             }
         }
@@ -520,7 +501,8 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                nextPlayerIndex = decideNextposition(currentPlayerIndex, 3);
+                nextDir = 3;
+                nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
                 shouldRotateCube = true;
             }
         }
@@ -617,5 +599,30 @@ public class GameManager : MonoBehaviour
                 break;
         }
         return 0;
+    }
+    Vector3 GetCubeRotation()
+    {
+        // 새로운 면으로 큐브 전체 회전을 설정합니다.
+        Vector3 targetRotation = Vector3.zero;
+
+        if (nextDir == 1) // 위에서 아래로 이동
+        {
+            // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
+            targetRotation = new Vector3(90, 0, 0); // 남쪽 면으로 회전
+        }
+        else if (nextDir == 0) // 아래에서 위로 이동
+        {
+            targetRotation = new Vector3(-90, 0, 0); // 북쪽 면으로 회전
+        }
+        else if (nextDir == 3) // 왼쪽에서 오른쪽으로 이동
+        {
+            targetRotation = new Vector3(0, 0, 90); // 동쪽 면으로 회전
+        }
+        else if (nextDir == 2) // 오른쪽에서 왼쪽으로 이동
+        {
+            targetRotation = new Vector3(0, 0, -90); // 서쪽 면으로 회전
+        }
+
+        return targetRotation;
     }
 }
