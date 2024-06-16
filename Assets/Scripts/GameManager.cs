@@ -16,6 +16,11 @@ public class MapArray
         }
     }
 }
+[System.Serializable]
+public class MusicOffset
+{
+    public int[] offsets;
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -34,6 +39,7 @@ public class GameManager : MonoBehaviour
 
     private int currentPlayerIndex;
     private int[][] cubeMusicIndices;
+    public MusicOffset[] musicoffset;
     private int nextPlayerIndex;
     private bool isChoosingDirection = false;
     public bool shouldRotateCube = false; // 큐브 회전 여부
@@ -186,7 +192,7 @@ public class GameManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
         InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
-        currentPlayerIndex = 0;
+        currentPlayerIndex = 3;
         nextPlayerIndex = currentPlayerIndex;
         StartGame();
     }
@@ -207,22 +213,40 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GameRoutine());
     }
 
+    bool music10playing = false;
+
+   
     void PlayMusic(int[] indices)
     {
         audioSource.Stop();
-        audioSource.clip = musics[indices[0]];
+        audioSource.clip = musics[indices[0] + musicoffset[currentStage].offsets[0]];
         audioSource.Play();
         audioSource.volume = 0.1f;
 
         tmp[0].Stop();
-        tmp[0].clip = musics[indices[1]];
+        tmp[0].clip = musics[indices[1] + musicoffset[currentStage].offsets[1]];
         tmp[0].Play();
         tmp[0].volume = 0.1f;
 
         tmp[1].Stop();
-        tmp[1].clip = musics[indices[2]];
+        tmp[1].clip = musics[indices[2] + musicoffset[currentStage].offsets[2]];
         tmp[1].Play();
         tmp[1].volume = 0.1f;
+
+        tmp[2].Stop();
+        if (music10playing)
+        {
+            tmp[2].clip = musics[10 +musicoffset[currentStage].offsets[3]];
+            music10playing =false;
+        }
+        else
+        {
+            tmp[2].clip = musics[9 + musicoffset[currentStage].offsets[3]];
+            music10playing = true;
+        }
+        tmp[2].Play();
+        tmp[2].volume = 0.1f;
+        
     }
 
     void SetPlayerPosition(int index, bool first = false)

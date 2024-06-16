@@ -4942,6 +4942,17 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 5a360107d874987419b2e7bf16db496e, type: 3}
   - {fileID: 8300000, guid: 548e6124c57a295458478c6f0e0fe6fe, type: 3}
   - {fileID: 8300000, guid: a8cb7c070d65740459c5cbee1f156b38, type: 3}
+  - {fileID: 8300000, guid: 9047ef6182e86ec4f8a7b0f9c2b15edf, type: 3}
+  - {fileID: 8300000, guid: 62f1ab0363c69be499c41ed9569b6e67, type: 3}
+  - {fileID: 8300000, guid: dfc5ee203ed966344a2dd8f85254e858, type: 3}
+  - {fileID: 8300000, guid: 0e54504bf8f696c4bb26d3a30738b516, type: 3}
+  - {fileID: 8300000, guid: 5c9d4a60603992a46ac526c7f0c187ed, type: 3}
+  - {fileID: 8300000, guid: 51d28b04560a18044b4bcd7f91c9641a, type: 3}
+  - {fileID: 8300000, guid: 82ebd471ec0f40047a2a302ed25c11fe, type: 3}
+  - {fileID: 8300000, guid: a149c0705c8baef41bb778197a4c09ab, type: 3}
+  - {fileID: 8300000, guid: d4d900a5dc1407b4c95e7ac6e8409c5e, type: 3}
+  - {fileID: 8300000, guid: 2349f777aa3b5444c963103953efe220, type: 3}
+  - {fileID: 8300000, guid: 6562ad1241d7dd74abe032a59c9e1c11, type: 3}
   planePositions:
   - {fileID: 1973914417}
   - {fileID: 1293010990}
@@ -5046,6 +5057,12 @@ MonoBehaviour:
   - {fileID: 507619298}
   - {fileID: 411145100}
   camMovement: {fileID: 1274229439}
+  musicoffset:
+  - offsets: 00000000000000000000000000000000
+  - offsets: 0b0000000b0000000000000000000000
+  - offsets: 000000000b000000000000000b000000
+  - offsets: 00000000000000000b0000000b000000
+  - offsets: 0b000000000000000b00000000000000
   shouldRotateCube: 0
   textures:
   - {fileID: 2100000, guid: 82d67fbdf32d5df439e605a2db32c847, type: 2}
