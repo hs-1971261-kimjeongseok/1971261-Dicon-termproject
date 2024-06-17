@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     private Vector3 moveDirection;
     public Transform currentPosition;
     private Vector3 originalPosition;
+    AudioSource audioSource;
 
     public bool canMove = true;
 
@@ -53,8 +54,15 @@ public class Player : MonoBehaviour
     {
         StartCoroutine(RerollAnimation());
     }
+    private void Start()
+    {
+        audioSource = this.gameObject.GetComponent<AudioSource>();  
+    }
     private IEnumerator RerollAnimation()
     {
+        audioSource.Stop();
+        audioSource.Play();
+        audioSource.volume = 0.05f;
         // 저장된 원래 위치
         originalPosition = transform.position;
 
