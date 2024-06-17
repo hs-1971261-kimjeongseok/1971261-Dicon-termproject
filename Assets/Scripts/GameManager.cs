@@ -56,15 +56,19 @@ public class GameManager : MonoBehaviour
     int nextDir = 0;
 
     
-    void setCubetextures()
+    void setCubetextures(int stage = 0)
     {
         for (int k = 0; k < allCubes.Length; k++) 
         {
 
             for(int i=0;i< allCubes[k].map.Length;i++)
             {
+                int rotx = UnityEngine.Random.Range(0, 2);
+                int roty = UnityEngine.Random.Range(0, 2);
+                int rotz = UnityEngine.Random.Range(0, 2);
+                allCubes[k].map[i].transform.rotation = Quaternion.Euler(90 * rotx, 90 * roty, 90 * rotz);
                 MeshRenderer renderer = allCubes[k].map[i].GetComponent<MeshRenderer>();
-                renderer.material = textures[UnityEngine.Random.Range(0, 5)];
+                renderer.material = textures[stage];
             }
         }
     }
@@ -324,13 +328,15 @@ public class GameManager : MonoBehaviour
         cubeRotate.rotationAngle = targetRotation;
         cubeRotate.StartRotation();
 
+        int nextStage = decideStage(currentStage);
+
         while (elapsed < duration && !cubeRotate.rotateEnd)
         {
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        int nextStage = decideStage(currentStage);
+        
         switch (nextStage)
         {
             case 0:
@@ -355,6 +361,7 @@ public class GameManager : MonoBehaviour
         currentStage = nextStage;
 
         setPostProcessing();
+        setCubetextures(nextStage);
 
         Environment.transform.parent = null;
 
@@ -623,7 +630,7 @@ public class GameManager : MonoBehaviour
                         return curPlayerIdx * 4;
                         break;
                     case 1://아래
-                        return (curPlayerIdx - 12) * 4;
+                        return (15 - curPlayerIdx) * 4;
                         break;
                     case 2://왼
                         return curPlayerIdx;
