@@ -91,7 +91,7 @@ MonoBehaviour:
     value: 5.2
   focalLength:
     overrideState: 1
-    value: 48
+    value: 30
   kernelSize:
     overrideState: 0
     value: 1
@@ -1552,6 +1552,9 @@ MonoBehaviour:
   thicknessModifier:
     overrideState: 0
     value: 1
+  zBias:
+    overrideState: 0
+    value: 0.0001
   directLightingStrength:
     overrideState: 0
     value: 0
