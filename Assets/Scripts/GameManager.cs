@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
     public AudioSource[] tmp;
     public CamMovement camMovement;
 
-    private int currentPlayerIndex;
+    public int currentPlayerIndex;
     private int[][] cubeMusicIndices;
     public MusicOffset[] musicoffset;
     private int nextPlayerIndex;
@@ -192,7 +192,7 @@ public class GameManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
         InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
-        currentPlayerIndex = 3;
+       
         nextPlayerIndex = currentPlayerIndex;
         StartGame();
     }
