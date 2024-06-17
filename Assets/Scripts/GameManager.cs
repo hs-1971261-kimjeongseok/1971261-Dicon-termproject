@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -502,7 +503,11 @@ public class GameManager : MonoBehaviour
                     shouldRotateCube = true;
                 }
                 player.transform.position = spawnPoints[currentPlayerIndex].map[0].transform.position;
+                
                 nextSpawnpoint = 3;
+                Animator animator = player.GetComponent<Animator>();
+                animator.SetTrigger("Hit");
+
             }
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow) || tmpDir == 1)
@@ -527,6 +532,8 @@ public class GameManager : MonoBehaviour
                 }
                 player.transform.position = spawnPoints[currentPlayerIndex].map[3].transform.position;
                 nextSpawnpoint = 0;
+                Animator animator = player.GetComponent<Animator>();
+                animator.SetTrigger("Select");
             }
             
         }
@@ -553,6 +560,8 @@ public class GameManager : MonoBehaviour
                 }
                 player.transform.position = spawnPoints[currentPlayerIndex].map[1].transform.position;
                 nextSpawnpoint = 2;
+                Animator animator = player.GetComponent<Animator>();
+                animator.SetTrigger("Select");
             }
            
         }
@@ -578,9 +587,12 @@ public class GameManager : MonoBehaviour
                 }
                 player.transform.position = spawnPoints[currentPlayerIndex].map[2].transform.position;
                 nextSpawnpoint = 1;
+                Animator animator = player.GetComponent<Animator>();
+                animator.SetTrigger("Select");
             }
             
         }
+        
     }
     int decideNextposition(int curPlayerIdx, int dir) // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
     {

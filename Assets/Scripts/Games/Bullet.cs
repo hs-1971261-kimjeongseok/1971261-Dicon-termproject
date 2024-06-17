@@ -12,7 +12,7 @@ public class Bullet : MonoBehaviour
         //transform.Rotate(new Vector3(90,0,0));
         target = GameObject.FindGameObjectWithTag("Player").transform;
         Destroy(gameObject, 5f); // 5초 후 자동 파괴
-        direction = (target.position - transform.position).normalized;
+        direction = (new Vector3(target.position.x, 0.183f, target.position.z) - transform.position).normalized;
     }
 
     void Update()
@@ -28,6 +28,8 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.transform.tag == "Player")
         {
+            Player tmp = collision.gameObject.GetComponent<Player>();
+            tmp.reroll();
             Destroy(gameObject);
         }
     }
