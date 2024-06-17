@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     private AudioSource audioSource;
     public AudioSource[] tmp;
     public CamMovement camMovement;
+    public GameObject[] postProcessings;
 
     public int currentPlayerIndex;
     private int[][] cubeMusicIndices;
@@ -221,19 +222,19 @@ public class GameManager : MonoBehaviour
         audioSource.Stop();
         audioSource.clip = musics[indices[0] + musicoffset[currentStage].offsets[0]];
         audioSource.Play();
-        audioSource.volume = 0.1f;
+        audioSource.volume = 0.08f;
         if (musicoffset[currentStage].offsets[0] > 0) { audioSource.volume = 0.05f; }
 
         tmp[0].Stop();
         tmp[0].clip = musics[indices[1] + musicoffset[currentStage].offsets[1]];
         tmp[0].Play();
-        tmp[0].volume = 0.1f;
+        tmp[0].volume = 0.08f;
         if (musicoffset[currentStage].offsets[1] > 0) { tmp[0].volume = 0.05f; }
 
         tmp[1].Stop();
         tmp[1].clip = musics[indices[2] + musicoffset[currentStage].offsets[2]];
         tmp[1].Play();
-        tmp[1].volume = 0.1f;
+        tmp[1].volume = 0.08f;
         if (musicoffset[currentStage].offsets[2] > 0) { tmp[1].volume = 0.05f; }
 
         tmp[2].Stop();
@@ -248,7 +249,7 @@ public class GameManager : MonoBehaviour
             music10playing = true;
         }
         tmp[2].Play();
-        tmp[2].volume = 0.1f;
+        tmp[2].volume = 0.08f;
         if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
     }
 
@@ -351,6 +352,9 @@ public class GameManager : MonoBehaviour
                 break;
         }
         currentStage = nextStage;
+
+        setPostProcessing();
+
         Environment.transform.parent = null;
 
         CubeMap.transform.rotation = Quaternion.Euler(0,0,0);
@@ -363,7 +367,14 @@ public class GameManager : MonoBehaviour
         camMovement.targetPosition = planePositions[currentPlayerIndex];
         camMovement.StartMoving(true);
     }
-
+    void setPostProcessing()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            postProcessings[i].SetActive(false);
+        }
+        postProcessings[currentStage].SetActive(true);
+    }
 
 
     int nextSide = 0;
