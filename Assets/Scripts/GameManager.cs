@@ -222,16 +222,19 @@ public class GameManager : MonoBehaviour
         audioSource.clip = musics[indices[0] + musicoffset[currentStage].offsets[0]];
         audioSource.Play();
         audioSource.volume = 0.1f;
+        if (musicoffset[currentStage].offsets[0] > 0) { audioSource.volume = 0.05f; }
 
         tmp[0].Stop();
         tmp[0].clip = musics[indices[1] + musicoffset[currentStage].offsets[1]];
         tmp[0].Play();
         tmp[0].volume = 0.1f;
+        if (musicoffset[currentStage].offsets[1] > 0) { tmp[0].volume = 0.05f; }
 
         tmp[1].Stop();
         tmp[1].clip = musics[indices[2] + musicoffset[currentStage].offsets[2]];
         tmp[1].Play();
         tmp[1].volume = 0.1f;
+        if (musicoffset[currentStage].offsets[2] > 0) { tmp[1].volume = 0.05f; }
 
         tmp[2].Stop();
         if (music10playing)
@@ -246,7 +249,7 @@ public class GameManager : MonoBehaviour
         }
         tmp[2].Play();
         tmp[2].volume = 0.1f;
-        
+        if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
     }
 
     void SetPlayerPosition(int index, bool first = false)
