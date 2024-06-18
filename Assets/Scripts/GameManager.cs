@@ -62,19 +62,63 @@ public class GameManager : MonoBehaviour
     private int nextSpawnpoint = 0;
     int nextDir = 0;
 
+    public int nokori = 2;
     public Map[] maps; // 0 위 1 좌 2 우 3 아래
 
     public Map[] midPoints;
     public GameObject[] flags; // 0red 1yellow 2green
     public MapArray[] arrows; //0red 1yellow 2green //0up 1left 2right 3down
     public Map[] bossMusicCycle;
+    public int bossMusicIdx = 0;
 
+    public bool boss;
+    void PlayMusic(int[] indices, bool boss = false)
+    {
 
-    bool boss;
+        audioSource.Stop();
+        if (boss) { audioSource.clip = bossmusics[bossMusicCycle[bossMusicIdx].map[0] + musicoffset[currentStage].offsets[0]]; }
+        else { audioSource.clip = musics[indices[0] + musicoffset[currentStage].offsets[0]]; }
+        audioSource.Play();
+        audioSource.volume = 0.08f;
+        if (musicoffset[currentStage].offsets[0] > 0) { audioSource.volume = 0.05f; }
+
+        tmp[0].Stop();
+        if (boss) { tmp[0].clip = bossmusics[bossMusicCycle[bossMusicIdx].map[1] + musicoffset[currentStage].offsets[1]]; }
+        else { tmp[0].clip = musics[indices[1] + musicoffset[currentStage].offsets[1]]; }
+        tmp[0].Play();
+        tmp[0].volume = 0.08f;
+        if (musicoffset[currentStage].offsets[1] > 0) { tmp[0].volume = 0.05f; }
+
+        tmp[1].Stop();
+        if (boss) { tmp[1].clip = bossmusics[bossMusicCycle[bossMusicIdx].map[2] + musicoffset[currentStage].offsets[2]]; }
+        else { tmp[1].clip = musics[indices[1] + musicoffset[currentStage].offsets[2]]; }
+        tmp[1].Play();
+        tmp[1].volume = 0.08f;
+        if (musicoffset[currentStage].offsets[2] > 0) { tmp[1].volume = 0.05f; }
+
+        tmp[2].Stop();
+        if (!boss)
+        {
+            if (music10playing)
+            {
+                tmp[2].clip = musics[10 + musicoffset[currentStage].offsets[3]];
+                music10playing = false;
+            }
+            else
+            {
+                tmp[2].clip = musics[9 + musicoffset[currentStage].offsets[3]];
+                music10playing = true;
+            }
+            tmp[2].Play();
+            tmp[2].volume = 0.08f;
+            if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
+        }
+        if (boss) { bossMusicIdx++; }
+        if (bossMusicIdx > 7) { bossMusicIdx = 0; }
+    }
 
     void Start()
     {
-        boss = false;
         setCubetextures();
         allCubes[0].setArray(currentCubes);
         audioSource = GetComponent<AudioSource>();
@@ -288,41 +332,7 @@ public class GameManager : MonoBehaviour
     bool music10playing = false;
 
    
-    void PlayMusic(int[] indices)
-    {
-        audioSource.Stop();
-        audioSource.clip = musics[indices[0] + musicoffset[currentStage].offsets[0]];
-        audioSource.Play();
-        audioSource.volume = 0.08f;
-        if (musicoffset[currentStage].offsets[0] > 0) { audioSource.volume = 0.05f; }
-
-        tmp[0].Stop();
-        tmp[0].clip = musics[indices[1] + musicoffset[currentStage].offsets[1]];
-        tmp[0].Play();
-        tmp[0].volume = 0.08f;
-        if (musicoffset[currentStage].offsets[1] > 0) { tmp[0].volume = 0.05f; }
-
-        tmp[1].Stop();
-        tmp[1].clip = musics[indices[2] + musicoffset[currentStage].offsets[2]];
-        tmp[1].Play();
-        tmp[1].volume = 0.08f;
-        if (musicoffset[currentStage].offsets[2] > 0) { tmp[1].volume = 0.05f; }
-
-        tmp[2].Stop();
-        if (music10playing)
-        {
-            tmp[2].clip = musics[10 +musicoffset[currentStage].offsets[3]];
-            music10playing =false;
-        }
-        else
-        {
-            tmp[2].clip = musics[9 + musicoffset[currentStage].offsets[3]];
-            music10playing = true;
-        }
-        tmp[2].Play();
-        tmp[2].volume = 0.08f;
-        if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
-    }
+    
 
     void SetPlayerPosition(int index, bool first = false)
     {
@@ -457,17 +467,139 @@ public class GameManager : MonoBehaviour
 
     int nextSide = 0;
     int tmpDir = -1;
+    bool transition = false;
     IEnumerator GameRoutine()
     {
         while (true)
         {
+            if (transition)
+            {
+                if (currentGame != null)
+                {
+                    currentGame.GameStop();
+                    
+                }
+                player.GetComponent<Player>().canMove = false;
+
+                tmp[2].Stop();
+                tmp[2].clip = bossmusics[0 + musicoffset[currentStage].offsets[0]];
+                tmp[2].Play();
+                tmp[2].volume = 0.08f;
+                if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
+
+                yield return new WaitForSeconds(5.714285714285715f);
+
+                tmp[2].Stop();
+                tmp[2].clip = bossmusics[1 + musicoffset[currentStage].offsets[0]];
+                tmp[2].Play();
+                tmp[2].volume = 0.08f;
+                if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
+
+                yield return new WaitForSeconds(5.714285714285715f);
+                boss = true;
+                // 음악 재생
+                PlayMusic(cubeMusicIndices[currentPlayerIndex], true);
+                player.GetComponent<Player>().canMove = true;
+                SetPlayerPosition(currentPlayerIndex, true);
+
+                transition = false;
+                
+
+            }
             if (boss)
             {
+                // Boss 모드: 4.6137142857초 동안 게임 진행
+                yield return new WaitForSeconds(4.6137142857f);
 
+                if (currentGame != null)
+                {
+                    currentGame.GameStop();
+                }
+
+                // 플레이어 방향 선택 대기: 0.1초 동안 방향키 입력 대기
+                player.GetComponent<Player>().canMove = false;
+                tmpDir = UnityEngine.Random.Range(0, 4);
+                player.transform.position = spawnPoints[currentPlayerIndex].map[tmpDir].transform.position;
+                isChoosingDirection = true;
+                float elapsedTime = 0f;
+                while (elapsedTime < 0.1f)
+                {
+                    HandleDirectionInput();
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+                isChoosingDirection = false;
+
+                if (shouldRotateCube)
+                {
+                    // 큐브 회전: 1초 동안 플레이어 위치 변경
+                    yield return new WaitForSeconds(1f);
+
+                    // 큐브 회전
+                    Vector3 targetRotation = GetCubeRotation();
+                    yield return RotateCubeRoutine(targetRotation);
+
+                    SetPlayerPosition(currentPlayerIndex, true);
+                }
+                else
+                {
+                    // 일반 게임 모드
+                    Environment.transform.parent = CubeMap.transform;
+                    switch (currentStage)
+                    {
+                        case 0:
+                            Environment.transform.rotation = Quaternion.Euler(0, 0, 0);
+                            break;
+                        case 1:
+                            Environment.transform.rotation = Quaternion.Euler(0, -90, -90);
+                            break;
+                        case 2:
+                            Environment.transform.rotation = Quaternion.Euler(0, 90, 90);
+                            break;
+                        case 3:
+                            Environment.transform.rotation = Quaternion.Euler(-90, 0, 180);
+                            break;
+                        case 4:
+                            Environment.transform.rotation = Quaternion.Euler(90, 0, 0);
+                            break;
+                        case 5:
+                            Environment.transform.rotation = Quaternion.Euler(180, 0, 0);
+                            break;
+                    }
+                    Environment.transform.parent = null;
+
+                    // 플레이어 위치 변경
+                    yield return new WaitForSeconds(1f);
+                    currentPlayerIndex = nextPlayerIndex;
+                    camMovement.targetPosition = planePositions[currentPlayerIndex];
+                    camMovement.StartMoving(false);
+                    SetPlayerPosition(currentPlayerIndex);
+                }
+
+                if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
+                {
+                    //피
+                    setMidPoints(currentStage);
+                    setMidPointArrow(currentStage);
+                    nokori--;
+                }
+                if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
+                {
+                    //뭐로하지
+                    setMidPoints(currentStage);
+                    setMidPointArrow(currentStage);
+                    nokori--;
+                }
+
+                player.GetComponent<Player>().canMove = true;
+
+                // 음악 재생
+                PlayMusic(cubeMusicIndices[currentPlayerIndex], true);
+                shouldRotateCube = false; // 큐브 회전 플래그 초기화
             }
             else
             {
-                // 6.666초 동안 게임 진행
+                // 일반 모드: 6.666초 동안 게임 진행
                 yield return new WaitForSeconds(6.666f);
 
                 if (currentGame != null)
@@ -491,25 +623,19 @@ public class GameManager : MonoBehaviour
                 }
                 isChoosingDirection = false;
 
-
-
                 if (shouldRotateCube)
                 {
                     // 0.5초 동안 카메라 움직임
                     yield return new WaitForSeconds(0.5f);
 
-
                     // 큐브 회전
                     Vector3 targetRotation = GetCubeRotation();
                     yield return RotateCubeRoutine(targetRotation);
-                    //allCubes[nextSide].setArray(currentCubes);
-
 
                     SetPlayerPosition(currentPlayerIndex, true);
+
                     // 0.5초 동안 플레이어 위치 변경
                     yield return new WaitForSeconds(0.5f);
-
-
                 }
                 else
                 {
@@ -536,36 +662,48 @@ public class GameManager : MonoBehaviour
                             break;
                     }
                     Environment.transform.parent = null;
+
                     // 1초 동안 플레이어 위치 변경
                     yield return new WaitForSeconds(1f);
                     currentPlayerIndex = nextPlayerIndex;
                     camMovement.targetPosition = planePositions[currentPlayerIndex];
                     camMovement.StartMoving(false);
                     SetPlayerPosition(currentPlayerIndex);
-
                 }
 
+                
+
+                player.GetComponent<Player>().canMove = true;
+
+                
+                
+                shouldRotateCube = false; // 큐브 회전 플래그 초기화
                 if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
                 {
                     //피
                     setMidPoints(currentStage);
                     setMidPointArrow(currentStage);
+                    nokori--;
                 }
                 if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
                 {
                     //뭐로하지
                     setMidPoints(currentStage);
                     setMidPointArrow(currentStage);
+                    nokori--;
                 }
-
-                player.GetComponent<Player>().canMove = true;
-
-
-                // 음악 재생
-                PlayMusic(cubeMusicIndices[currentPlayerIndex]);
-                shouldRotateCube = false; // 큐브 회전 플래그 초기화
+                if (nokori == 0) { transition = true; }
+                if (!transition)
+                {
+                    // 음악 재생
+                    PlayMusic(cubeMusicIndices[currentPlayerIndex]);
+                }
+                else
+                {
+                    
+                }
             }
-            
+
         }
     }
 

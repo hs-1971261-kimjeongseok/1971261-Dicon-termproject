@@ -6004,6 +6004,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: ecb77553017220c4da6e781c12dfdece, type: 2}
   - {fileID: 2100000, guid: 6752a97ced34f344bad5c03e7b1aa03a, type: 2}
   BulletDodgeGamePrefab: {fileID: 7337236263946837138, guid: eee2bb556b962fc4696d29725fad28d7, type: 3}
+  nokori: 1
   maps:
   - map: 03000000010000000200000004000000
   - map: 00000000030000000400000005000000
@@ -6042,6 +6043,7 @@ MonoBehaviour:
   - map: 070000000800000009000000
   - map: 000000000100000008000000
   - map: 06000000080000000a000000
+  boss: 0
 --- !u!82 &913614611
 AudioSource:
   m_ObjectHideFlags: 0
