@@ -5856,6 +5856,29 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d4d900a5dc1407b4c95e7ac6e8409c5e, type: 3}
   - {fileID: 8300000, guid: 2349f777aa3b5444c963103953efe220, type: 3}
   - {fileID: 8300000, guid: 6562ad1241d7dd74abe032a59c9e1c11, type: 3}
+  bossmusics:
+  - {fileID: 8300000, guid: 8cf176ec5b0ca0242a72169050a1cff2, type: 3}
+  - {fileID: 8300000, guid: e3bea4ec3fb78744db35f4d661dea28f, type: 3}
+  - {fileID: 8300000, guid: 15ad718b8e40c584a824eda81cd0631a, type: 3}
+  - {fileID: 8300000, guid: e9f96b0e45e390046a9b38b72e2bfe18, type: 3}
+  - {fileID: 8300000, guid: 8e0a7a478e208a34a9b049a2549b01af, type: 3}
+  - {fileID: 8300000, guid: 49413dd4448aaef4ab4e15d22d4564d8, type: 3}
+  - {fileID: 8300000, guid: 88158a87ca9aa87489b2ce0caf61b44e, type: 3}
+  - {fileID: 8300000, guid: f48c6bc3cbc6c6e428f2aeb44de980de, type: 3}
+  - {fileID: 8300000, guid: 3736d95d6bf2faa4d9f90fe7e4cfe479, type: 3}
+  - {fileID: 8300000, guid: da5eeb033e6544d47b6afd96b85796d6, type: 3}
+  - {fileID: 8300000, guid: 5ae0ae31873e13441ad79fffe61515e7, type: 3}
+  - {fileID: 8300000, guid: 5b7aa26bc1b39ca49849a64664d946e6, type: 3}
+  - {fileID: 8300000, guid: 367b5e7e4c1358b44939ea3b0e43a44f, type: 3}
+  - {fileID: 8300000, guid: b9fa47c4d98ae464b90fbc198ecf9e22, type: 3}
+  - {fileID: 8300000, guid: 77cfc564fab7cc64fa6c4eefff803752, type: 3}
+  - {fileID: 8300000, guid: 52e4dea1043616e4f894cc69f4705bdd, type: 3}
+  - {fileID: 8300000, guid: cc83dbdce4a6ae2418e228382385e6f6, type: 3}
+  - {fileID: 8300000, guid: 7d7616dac76ea46429dabc0954c32d2a, type: 3}
+  - {fileID: 8300000, guid: 8d00d8eb5de8adb41b75b06dec0a119e, type: 3}
+  - {fileID: 8300000, guid: 4acd5457e21ded7478bea8ccdea5fe82, type: 3}
+  - {fileID: 8300000, guid: 56cb18f23c68bae4484a58b6db341310, type: 3}
+  - {fileID: 8300000, guid: 8381ed96773162645b77912901f8a671, type: 3}
   planePositions:
   - {fileID: 1973914417}
   - {fileID: 1293010990}
@@ -6010,6 +6033,15 @@ MonoBehaviour:
     - {fileID: 1640502416}
     - {fileID: 60091318}
     - {fileID: 1442932134}
+  bossMusicCycle:
+  - map: 000000000200000006000000
+  - map: 060000000500000009000000
+  - map: 000000000300000005000000
+  - map: 05000000070000000a000000
+  - map: 000000000400000007000000
+  - map: 070000000800000009000000
+  - map: 000000000100000008000000
+  - map: 06000000080000000a000000
 --- !u!82 &913614611
 AudioSource:
   m_ObjectHideFlags: 0

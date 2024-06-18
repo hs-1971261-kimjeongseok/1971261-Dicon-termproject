@@ -36,7 +36,8 @@ public class GameManager : MonoBehaviour
     public GameObject CubeMap; // 전체 큐브들의 중심 위치
     public MapArray[] allCubes; // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
     public GameObject[] currentCubes = new GameObject[16];
-    public AudioClip[] musics; // 0은 항상 플레이됨, 1~4 중 하나와 5~8 중 하나가 플레이됨
+    public AudioClip[] musics; // 0은 항상 플레이됨, 1~4 중 하나와 5~8 중 하나가 플레이됨, 9와 10이 번갈아 플레이됨
+    public AudioClip[] bossmusics; // 정해진 순서에 따라 반복됨
     public Transform[] planePositions = new Transform[16];
     public MapArray[] spawnPoints;//플레이어 스폰 위치
     public GameObject player;
@@ -66,8 +67,26 @@ public class GameManager : MonoBehaviour
     public Map[] midPoints;
     public GameObject[] flags; // 0red 1yellow 2green
     public MapArray[] arrows; //0red 1yellow 2green //0up 1left 2right 3down
+    public Map[] bossMusicCycle;
 
 
+    bool boss;
+
+    void Start()
+    {
+        boss = false;
+        setCubetextures();
+        allCubes[0].setArray(currentCubes);
+        audioSource = GetComponent<AudioSource>();
+        cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
+        InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
+
+        setMidPoints(0);
+        setMidPointArrow(0);
+
+        nextPlayerIndex = currentPlayerIndex;
+        StartGame();
+    }
     void setMidPoints(int curStage)
     {
         int stage = UnityEngine.Random.Range(0, 5);
@@ -248,20 +267,7 @@ public class GameManager : MonoBehaviour
         return 0;
     }
 
-    void Start()
-    {
-        setCubetextures();
-        allCubes[0].setArray(currentCubes);
-        audioSource = GetComponent<AudioSource>();
-        cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
-        InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
-
-        setMidPoints(0);
-        setMidPointArrow(0);
-       
-        nextPlayerIndex = currentPlayerIndex;
-        StartGame();
-    }
+    
 
     void InitializeCubeMusicIndices()
     {
@@ -455,103 +461,111 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            // 6.666초 동안 게임 진행
-            yield return new WaitForSeconds(6.666f);
-
-            if (currentGame != null)
+            if (boss)
             {
-                currentGame.GameStop();
-            }
-            player.GetComponent<Player>().hp++;
-            player.GetComponent<Player>().decideRotation(player.GetComponent<Player>().hp);
 
-            // 2.333초 동안 방향키 입력 대기
-            player.GetComponent<Player>().canMove = false;
-            tmpDir = UnityEngine.Random.Range(0, 4);
-            player.transform.position = spawnPoints[currentPlayerIndex].map[tmpDir].transform.position;
-            isChoosingDirection = true;
-            float elapsedTime = 0f;
-            while (elapsedTime < 2.333f)
-            {
-                HandleDirectionInput();
-                elapsedTime += Time.deltaTime;
-                yield return null;
-            }
-            isChoosingDirection = false;
-
-            
-
-            if (shouldRotateCube)
-            {
-                // 0.5초 동안 카메라 움직임
-                yield return new WaitForSeconds(0.5f);
-                
-
-                // 큐브 회전
-                Vector3 targetRotation = GetCubeRotation();
-                yield return RotateCubeRoutine(targetRotation);
-                //allCubes[nextSide].setArray(currentCubes);
-
-
-                SetPlayerPosition(currentPlayerIndex,true);
-                // 0.5초 동안 플레이어 위치 변경
-                yield return new WaitForSeconds(0.5f);
-                
-                
             }
             else
             {
-                Environment.transform.parent = CubeMap.transform;
-                switch (currentStage)
+                // 6.666초 동안 게임 진행
+                yield return new WaitForSeconds(6.666f);
+
+                if (currentGame != null)
                 {
-                    case 0:
-                        Environment.transform.rotation = Quaternion.Euler(0, 0, 0);
-                        break;
-                    case 1:
-                        Environment.transform.rotation = Quaternion.Euler(0, -90, -90);
-                        break;
-                    case 2:
-                        Environment.transform.rotation = Quaternion.Euler(0, 90, 90);
-                        break;
-                    case 3:
-                        Environment.transform.rotation = Quaternion.Euler(-90, 0, 180);
-                        break;
-                    case 4:
-                        Environment.transform.rotation = Quaternion.Euler(90, 0, 0);
-                        break;
-                    case 5:
-                        Environment.transform.rotation = Quaternion.Euler(180, 0, 0);
-                        break;
+                    currentGame.GameStop();
                 }
-                Environment.transform.parent = null;
-                // 1초 동안 플레이어 위치 변경
-                yield return new WaitForSeconds(1f);
-                currentPlayerIndex = nextPlayerIndex;
-                camMovement.targetPosition = planePositions[currentPlayerIndex];
-                camMovement.StartMoving(false);
-                SetPlayerPosition(currentPlayerIndex);
-                
+                player.GetComponent<Player>().hp++;
+                player.GetComponent<Player>().decideRotation(player.GetComponent<Player>().hp);
+
+                // 2.333초 동안 방향키 입력 대기
+                player.GetComponent<Player>().canMove = false;
+                tmpDir = UnityEngine.Random.Range(0, 4);
+                player.transform.position = spawnPoints[currentPlayerIndex].map[tmpDir].transform.position;
+                isChoosingDirection = true;
+                float elapsedTime = 0f;
+                while (elapsedTime < 2.333f)
+                {
+                    HandleDirectionInput();
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+                isChoosingDirection = false;
+
+
+
+                if (shouldRotateCube)
+                {
+                    // 0.5초 동안 카메라 움직임
+                    yield return new WaitForSeconds(0.5f);
+
+
+                    // 큐브 회전
+                    Vector3 targetRotation = GetCubeRotation();
+                    yield return RotateCubeRoutine(targetRotation);
+                    //allCubes[nextSide].setArray(currentCubes);
+
+
+                    SetPlayerPosition(currentPlayerIndex, true);
+                    // 0.5초 동안 플레이어 위치 변경
+                    yield return new WaitForSeconds(0.5f);
+
+
+                }
+                else
+                {
+                    Environment.transform.parent = CubeMap.transform;
+                    switch (currentStage)
+                    {
+                        case 0:
+                            Environment.transform.rotation = Quaternion.Euler(0, 0, 0);
+                            break;
+                        case 1:
+                            Environment.transform.rotation = Quaternion.Euler(0, -90, -90);
+                            break;
+                        case 2:
+                            Environment.transform.rotation = Quaternion.Euler(0, 90, 90);
+                            break;
+                        case 3:
+                            Environment.transform.rotation = Quaternion.Euler(-90, 0, 180);
+                            break;
+                        case 4:
+                            Environment.transform.rotation = Quaternion.Euler(90, 0, 0);
+                            break;
+                        case 5:
+                            Environment.transform.rotation = Quaternion.Euler(180, 0, 0);
+                            break;
+                    }
+                    Environment.transform.parent = null;
+                    // 1초 동안 플레이어 위치 변경
+                    yield return new WaitForSeconds(1f);
+                    currentPlayerIndex = nextPlayerIndex;
+                    camMovement.targetPosition = planePositions[currentPlayerIndex];
+                    camMovement.StartMoving(false);
+                    SetPlayerPosition(currentPlayerIndex);
+
+                }
+
+                if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
+                {
+                    //피
+                    setMidPoints(currentStage);
+                    setMidPointArrow(currentStage);
+                }
+                if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
+                {
+                    //뭐로하지
+                    setMidPoints(currentStage);
+                    setMidPointArrow(currentStage);
+                }
+
+                player.GetComponent<Player>().canMove = true;
+
+
+                // 음악 재생
+                PlayMusic(cubeMusicIndices[currentPlayerIndex]);
+                shouldRotateCube = false; // 큐브 회전 플래그 초기화
             }
-
-            if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
-            {
-                //피
-                setMidPoints(currentStage);
-                setMidPointArrow(currentStage);
-            }
-            if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
-            {
-                //뭐로하지
-                setMidPoints(currentStage);
-                setMidPointArrow(currentStage);
-            }
-
-            player.GetComponent<Player>().canMove = true;
-
-
-            // 음악 재생
-            PlayMusic(cubeMusicIndices[currentPlayerIndex]);
-            shouldRotateCube = false; // 큐브 회전 플래그 초기화
+            
         }
     }
 
