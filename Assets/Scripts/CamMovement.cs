@@ -13,7 +13,7 @@ public class CamMovement : MonoBehaviour
     {
         if (isMoving)
         {
-            Vector3 targetPos = targetPosition.position + new Vector3(0, 10.48f, 0);
+            Vector3 targetPos = targetPosition.position + new Vector3(0, 13.48f, 0);
             Quaternion targetRot = Quaternion.Euler(90, 0, 0);
             transform.position = Vector3.Lerp(transform.position, targetPos, speed * Time.deltaTime);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, speed * Time.deltaTime);
@@ -34,7 +34,7 @@ public class CamMovement : MonoBehaviour
     {
         if ((a))
         {
-            Vector3 targetPos = targetPosition.position + new Vector3(0, 10.48f, 0);
+            Vector3 targetPos = targetPosition.position + new Vector3(0, 13.48f, 0);
             transform.position = targetPos;
         }
         else

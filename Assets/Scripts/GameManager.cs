@@ -23,6 +23,12 @@ public class MusicOffset
     public int[] offsets;
 }
 
+[System.Serializable]
+public class Map
+{
+    public int[] map;
+}
+
 public class GameManager : MonoBehaviour
 {
     public int currentStage = 0;
@@ -55,6 +61,57 @@ public class GameManager : MonoBehaviour
     private int nextSpawnpoint = 0;
     int nextDir = 0;
 
+    public Map[] maps; // 0 위 1 좌 2 우 3 아래
+
+    public Map[] midPoints;
+    public GameObject[] flags; // 0red 1yellow 2green
+    public MapArray[] arrows; //0red 1yellow 2green //0up 1left 2right 3down
+
+
+    void setMidPoints(int curStage)
+    {
+        int stage = UnityEngine.Random.Range(0, 5);
+        while(stage == curStage) { stage = UnityEngine.Random.Range(0, 5); }
+        midPoints[0].map[0] = stage;
+        midPoints[0].map[1] = UnityEngine.Random.Range(0, 16);
+
+        stage = UnityEngine.Random.Range(0, 5);
+        while (stage == curStage || stage == midPoints[0].map[0]) { stage = UnityEngine.Random.Range(0, 5); }
+        midPoints[1].map[0] = stage;
+        midPoints[1].map[1] = UnityEngine.Random.Range(0, 16);
+    }
+    void setMidPointArrow(int curstage)
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            flags[i].SetActive(false);
+            for(int j = 0; j < 4; j++)
+            {
+                arrows[i].map[j].SetActive(false);
+            }
+        }
+        if (curstage == midPoints[0].map[0])
+        {
+            flags[0].transform.position = planePositions[midPoints[0].map[1]].position;
+            flags[0].SetActive(true);
+        }
+        if (curstage == midPoints[1].map[0])
+        {
+            flags[1].transform.position = planePositions[midPoints[1].map[1]].position;
+            flags[1].SetActive(true);
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            if (maps[curstage].map[i] == midPoints[0].map[0])
+            {
+                arrows[0].map[i].SetActive(true);
+            }
+            if (maps[curstage].map[i] == midPoints[1].map[0])
+            {
+                arrows[1].map[i].SetActive(true);
+            }
+        }
+    }
     
     void setCubetextures(int stage = 0)
     {
@@ -198,6 +255,9 @@ public class GameManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
         InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
+
+        setMidPoints(0);
+        setMidPointArrow(0);
        
         nextPlayerIndex = currentPlayerIndex;
         StartGame();
@@ -363,6 +423,10 @@ public class GameManager : MonoBehaviour
         setPostProcessing();
         setCubetextures(nextStage);
 
+
+
+        setMidPointArrow(nextStage);
+
         Environment.transform.parent = null;
 
         CubeMap.transform.rotation = Quaternion.Euler(0,0,0);
@@ -414,8 +478,8 @@ public class GameManager : MonoBehaviour
             }
             isChoosingDirection = false;
 
-           
             
+
             if (shouldRotateCube)
             {
                 // 0.5초 동안 카메라 움직임
@@ -468,7 +532,18 @@ public class GameManager : MonoBehaviour
                 
             }
 
-            
+            if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
+            {
+                //피
+                setMidPoints(currentStage);
+                setMidPointArrow(currentStage);
+            }
+            if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
+            {
+                //뭐로하지
+                setMidPoints(currentStage);
+                setMidPointArrow(currentStage);
+            }
 
             player.GetComponent<Player>().canMove = true;
 
