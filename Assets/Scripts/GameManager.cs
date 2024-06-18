@@ -462,7 +462,8 @@ public class GameManager : MonoBehaviour
             {
                 currentGame.GameStop();
             }
-
+            player.GetComponent<Player>().hp++;
+            player.GetComponent<Player>().decideRotation(player.GetComponent<Player>().hp);
 
             // 2.333초 동안 방향키 입력 대기
             player.GetComponent<Player>().canMove = false;

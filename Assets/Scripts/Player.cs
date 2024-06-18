@@ -9,11 +9,22 @@ public class Player : MonoBehaviour
     public Transform currentPosition;
     private Vector3 originalPosition;
     AudioSource audioSource;
+    public int hp = 3;
+    public Vector3[] hpRotation;
+    private Quaternion currentRotation = Quaternion.Euler(0, 0, 0);
+    private int maxHP = 4;
 
     public bool canMove = true;
 
+    public void decideRotation(int curHP)
+    {
+        if(curHP<0) { return;}
+        if(curHP>maxHP) { curHP = maxHP; }
+        currentRotation = Quaternion.Euler(hpRotation[hp].x, hpRotation[hp].y, hpRotation[hp].z);
+    }
     void Update()
     {
+        transform.rotation = currentRotation;
         if (canMove)
         {
             float moveX = Input.GetAxis("Horizontal");
@@ -60,6 +71,8 @@ public class Player : MonoBehaviour
     }
     private IEnumerator RerollAnimation()
     {
+        hp--;
+
         audioSource.Stop();
         audioSource.Play();
         audioSource.volume = 0.05f;
@@ -88,7 +101,7 @@ public class Player : MonoBehaviour
         {
             transform.position = Vector3.Lerp(targetPosition, originalPosition, (elapsedTime / duration));
             elapsedTime += Time.deltaTime;
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            decideRotation(hp);
             yield return null;
         }
 
