@@ -5419,7 +5419,7 @@ MonoBehaviour:
   - {fileID: 1358290935}
   - {fileID: 498432042}
   - {fileID: 607078524}
-  currentPlayerIndex: 12
+  currentPlayerIndex: 3
   musicoffset:
   - offsets: 00000000000000000000000000000000
   - offsets: 0b0000000b0000000000000000000000

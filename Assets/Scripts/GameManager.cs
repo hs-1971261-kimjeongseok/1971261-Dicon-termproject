@@ -102,16 +102,16 @@ public class GameManager : MonoBehaviour
                 switch (nextSpawnpoint)//위3 아래0 좌2 우1
                 {
                     case 3:
-                        return 3;
+                        return 0;
                         break;
                     case 0:
-                        return 4;
-                        break;
-                    case 2:
                         return 5;
                         break;
+                    case 2:
+                        return 3;
+                        break;
                     case 1:
-                        return 0;
+                        return 4;
                         break;
                 }
                 break;
@@ -120,19 +120,19 @@ public class GameManager : MonoBehaviour
                 {
                     case 3:
                         nextSpawnpoint = 1;
-                        return 3;
+                        return 0;
                         break;
                     case 0:
                         nextSpawnpoint = 3;
-                        return 4;
+                        return 5;
                         break;
                     case 2:
                         nextSpawnpoint = 3;
-                        return 0;
+                        return 4;
                         break;
                     case 1:
                         nextSpawnpoint = 1;
-                        return 5;
+                        return 3;
                         break;
                 }
                 break;
@@ -140,16 +140,16 @@ public class GameManager : MonoBehaviour
                 switch (nextSpawnpoint)//위3 아래0 좌2 우1
                 {
                     case 3:
-                        return 5;
-                        break;
-                    case 0:
                         return 0;
                         break;
+                    case 0:
+                        return 5;
+                        break;
                     case 2:
-                        return 1;
+                        return 2;
                         break;
                     case 1:
-                        return 2;
+                        return 1;
                         break;
                 }
                 break;
@@ -343,13 +343,13 @@ public class GameManager : MonoBehaviour
                 Environment.transform.rotation = Quaternion.Euler(0, 0, 0);
                 break;
             case 1:
-                Environment.transform.rotation = Quaternion.Euler(0, 0, -90);
+                Environment.transform.rotation = Quaternion.Euler(0, -90, -90);
                 break;
             case 2:
-                Environment.transform.rotation = Quaternion.Euler(0, 0, 90);
+                Environment.transform.rotation = Quaternion.Euler(0, 90, 90);
                 break;
             case 3:
-                Environment.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                Environment.transform.rotation = Quaternion.Euler(-90, 0, 180);
                 break;
             case 4:
                 Environment.transform.rotation = Quaternion.Euler(90, 0, 0);
@@ -443,13 +443,13 @@ public class GameManager : MonoBehaviour
                         Environment.transform.rotation = Quaternion.Euler(0, 0, 0);
                         break;
                     case 1:
-                        Environment.transform.rotation = Quaternion.Euler(0, 0, -90);
+                        Environment.transform.rotation = Quaternion.Euler(0, -90, -90);
                         break;
                     case 2:
-                        Environment.transform.rotation = Quaternion.Euler(0, 0, 90);
+                        Environment.transform.rotation = Quaternion.Euler(0, 90, 90);
                         break;
                     case 3:
-                        Environment.transform.rotation = Quaternion.Euler(-90, 0, 0);
+                        Environment.transform.rotation = Quaternion.Euler(-90, 0, 180);
                         break;
                     case 4:
                         Environment.transform.rotation = Quaternion.Euler(90, 0, 0);
@@ -489,7 +489,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.UpArrow) || tmpDir == 0)
         {
-            if(currentStage == 3 && !adjacent.Contains(currentPlayerIndex - 4))
+            if(false)
             {
                 tmpDir = 1;
             }
@@ -506,7 +506,7 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("upa");
                     nextDir = 0;
-                    nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
+                    nextPlayerIndex = decideNextpos(currentPlayerIndex, nextDir);
                     shouldRotateCube = true;
                 }
                 player.transform.position = spawnPoints[currentPlayerIndex].map[0].transform.position;
@@ -519,7 +519,7 @@ public class GameManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow) || tmpDir == 1)
         {
-            if(currentStage == 4 && !adjacent.Contains(currentPlayerIndex + 4))
+            if(currentStage != 0 && !adjacent.Contains(currentPlayerIndex + 4))
             {
                 tmpDir = 0;
             }
@@ -534,7 +534,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     nextDir = 1;
-                    nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
+                    nextPlayerIndex = decideNextpos(currentPlayerIndex, nextDir);
                     shouldRotateCube = true;
                 }
                 player.transform.position = spawnPoints[currentPlayerIndex].map[3].transform.position;
@@ -546,7 +546,7 @@ public class GameManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow) || tmpDir == 2)
         {
-            if(currentStage == 1 && !adjacent.Contains(currentPlayerIndex - 1))
+            if(false)
             {
                 tmpDir = 3;
             }
@@ -562,7 +562,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     nextDir = 2;
-                    nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
+                    nextPlayerIndex = decideNextpos(currentPlayerIndex, nextDir);
                     shouldRotateCube = true;
                 }
                 player.transform.position = spawnPoints[currentPlayerIndex].map[1].transform.position;
@@ -574,7 +574,7 @@ public class GameManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow) || tmpDir == 3)
         {
-            if(currentStage == 2 &&!adjacent.Contains(currentPlayerIndex + 1))
+            if(false)
             {
                 tmpDir = 2;
             }
@@ -589,7 +589,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     nextDir = 3;
-                    nextPlayerIndex = decideNextposition(currentPlayerIndex, nextDir);
+                    nextPlayerIndex = decideNextpos(currentPlayerIndex, nextDir);
                     shouldRotateCube = true;
                 }
                 player.transform.position = spawnPoints[currentPlayerIndex].map[2].transform.position;
@@ -601,6 +601,101 @@ public class GameManager : MonoBehaviour
         }
         
     }
+    int decideNextpos(int curPlayerIdx, int dir)
+    {
+        //dir -> 0 up / 1 down / 2 left / 3 right
+        switch (currentStage)
+        {
+            case 0://위
+                switch (dir)
+                {
+                    case 0://위
+                        return 3 - curPlayerIdx;
+                        break;
+                    case 1://아래
+                        return curPlayerIdx - 12;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx / 4;
+                        break;
+                    case 3://오
+                        return (curPlayerIdx + 1) / 4 - 1;
+                        break;
+                }
+                break;
+            case 1://서
+                switch (dir)
+                {
+                    case 0://위
+                        return curPlayerIdx * 4;
+                        break;
+                    case 1://아래
+                        return curPlayerIdx;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx + 3;
+                        break;
+                    case 3://오
+                        return curPlayerIdx - 3;
+                        break;
+                }
+                break;
+            case 2://동
+                switch (dir)
+                {
+                    case 0://위
+                        return (3 - curPlayerIdx) * 4 + 3;
+                        break;
+                    case 1://아래
+                        return curPlayerIdx;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx - 3;
+                        break;
+                    case 3://오
+                        return curPlayerIdx + 3;
+                        break;
+                }
+                break;
+            case 3://북
+                switch (dir)
+                {
+                    case 0://위
+                        return (3 - curPlayerIdx);
+                        break;
+                    case 1://아래
+                        return curPlayerIdx;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx + 3;
+                        break;
+                    case 3://오
+                        return curPlayerIdx - 3;
+                        break;
+                }
+                break;
+            case 4://남
+                switch (dir)
+                {
+                    case 0://위
+                        return curPlayerIdx + 12;
+                        break;
+                    case 1://아래
+                        return curPlayerIdx;
+                        break;
+                    case 2://왼
+                        return curPlayerIdx + 3;
+                        break;
+                    case 3://오
+                        return curPlayerIdx - 3;
+                        break;
+                }
+                break;
+        }
+        return 0;
+    }
+
+    //old one
     int decideNextposition(int curPlayerIdx, int dir) // 0 위, 1 서, 2 동, 3 북, 4 남, 5 아래
     {
         //dir -> 0 up / 1 down / 2 left / 3 right
