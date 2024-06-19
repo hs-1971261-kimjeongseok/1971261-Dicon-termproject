@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class MapArray
@@ -73,6 +75,9 @@ public class GameManager : MonoBehaviour
 
     public GameObject bossimg;
 
+    private Coroutine gameRoutineCoroutine;
+
+
     public bool boss;
     void PlayMusic(int[] indices, bool boss = false)
     {
@@ -121,6 +126,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1f;
         bossimg.SetActive(false);
         setCubetextures();
         allCubes[0].setArray(currentCubes);
@@ -357,7 +363,7 @@ public class GameManager : MonoBehaviour
         PlayMusic(cubeMusicIndices[currentPlayerIndex]);
         SetPlayerPosition(currentPlayerIndex,true);
 
-        StartCoroutine(GameRoutine());
+        gameRoutineCoroutine = StartCoroutine(GameRoutine());
     }
 
     bool music10playing = false;
@@ -534,6 +540,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public bool gameover = false;
     IEnumerator PlayTransitionCutscene()
     {
         // 카메라를 위로 올리는 애니메이션
@@ -548,13 +555,16 @@ public class GameManager : MonoBehaviour
         // 움직일 이미지를 활성화하고 떨림 효과와 함께 올리는 애니메이션
         bossimg.SetActive(true);
         Vector3 originalImagePos = bossimg.transform.position;
-        Vector3 targetImagePos = originalImagePos + new Vector3(0, 0, 30); // 이미지를 30 유닛 위로 올림
+        Vector3 targetImagePos;
+        if (gameover) { targetImagePos = originalImagePos + new Vector3(0, 0, -30); } // 이미지를 30 유닛 위로 올림
+        else { targetImagePos = originalImagePos + new Vector3(0, 0, 30);} // 이미지를 30 유닛 위로 올림
+
 
         // 이미지를 위로 올림
         while (elapsedTime < duration)
         {
             camMovement.transform.position = Vector3.Lerp(middle, targetCamPos, elapsedTime / duration);
-            float randomOffset = UnityEngine.Random.Range(-1f, 1f); // 좌우로 불연속적으로 흔들리게 함
+            float randomOffset = UnityEngine.Random.Range(-0.5f, 0.5f); // 좌우로 불연속적으로 흔들리게 함
             bossimg.transform.position = Vector3.Lerp(originalImagePos, targetImagePos, elapsedTime / duration) + new Vector3(randomOffset, 0, 0); // 떨림 효과 추가
             
             elapsedTime += Time.deltaTime;
@@ -567,8 +577,8 @@ public class GameManager : MonoBehaviour
        
 
         // 움직일 이미지를 원래 위치로 되돌리고 비활성화
-        bossimg.transform.position = originalImagePos;
-        bossimg.SetActive(false);
+        //bossimg.transform.position = originalImagePos;
+        //bossimg.SetActive(false);
 
         // 카메라를 원래 위치로 되돌리는 애니메이션
         elapsedTime = 0f;
@@ -592,7 +602,7 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            
+            if (gameover) { yield break; }
             if (transition)
             {
                 if (currentGame != null)
@@ -683,6 +693,23 @@ public class GameManager : MonoBehaviour
                     // 큐브 회전: 1초 동안 플레이어 위치 변경
                     yield return new WaitForSeconds(1f);
 
+                    if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1]) // 게임 종료
+                    {
+                        tmp[2].Stop();
+                        tmp[2].clip = bossmusics[7 + musicoffset[currentStage].offsets[0]];
+                        tmp[2].Play();
+                        tmp[2].volume = 0.08f;
+                        if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
+
+                        gameover = true;
+
+                        // 컷신 시작
+                        yield return StartCoroutine(PlayTransitionCutscene());
+
+                        boss = false;
+                        showGameOverUI(true);
+                    }
+
                     // 큐브 회전
                     Vector3 targetRotation = GetCubeRotation();
                     yield return RotateCubeRoutine(targetRotation);
@@ -715,15 +742,26 @@ public class GameManager : MonoBehaviour
                     }
                     Environment.transform.parent = null;
 
-                    if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
-                    {
-                        Time.timeScale = 0f;
-                    }
+                    
 
                     // 플레이어 위치 변경
                     yield return new WaitForSeconds(1f);
 
-                    
+                    if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1]) // 게임 종료
+                    {
+                        tmp[2].Stop();
+                        tmp[2].clip = bossmusics[7 + musicoffset[currentStage].offsets[0]];
+                        tmp[2].Play();
+                        tmp[2].volume = 0.08f;
+                        if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
+
+                        gameover = true;
+
+                        // 컷신 시작
+                        yield return StartCoroutine(PlayTransitionCutscene());
+                        boss = false;
+                        showGameOverUI(true);
+                    }
 
 
                     currentPlayerIndex = nextPlayerIndex;
@@ -836,9 +874,10 @@ public class GameManager : MonoBehaviour
 
                 player.GetComponent<Player>().canMove = true;
 
-                
+
                 
                 shouldRotateCube = false; // 큐브 회전 플래그 초기화
+                transition = true;//for test
                 if (nokori == 0) { transition = true; }
                 if (!transition)
                 {
@@ -1185,5 +1224,46 @@ public class GameManager : MonoBehaviour
         }
 
         return targetRotation;
+    }
+
+    public GameObject gameoverset;
+    public TMP_Text gameovertext;
+    public void showGameOverUI(bool clear)
+    {
+        audioSource.Stop();
+        tmp[0].Stop();
+        tmp[1].Stop();
+        tmp[2].Stop();
+
+        if (!clear)
+        {
+            tmp[2].Stop();
+            tmp[2].clip = bossmusics[7 + musicoffset[currentStage].offsets[0]];
+            tmp[2].Play();
+            tmp[2].volume = 0.08f;
+            if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
+        }
+
+        if (gameRoutineCoroutine != null)
+        {
+            StopCoroutine(gameRoutineCoroutine);
+            gameRoutineCoroutine = null;
+            Time.timeScale = 0f;
+        }
+
+        gameoverset.SetActive(true);
+        if (clear)
+        {
+            gameovertext.text = "Game Clear!";
+        }
+        else
+        {
+            gameovertext.text = "Game Over..";
+        }
+        
+    }
+    public void goMain()
+    {
+        SceneManager.LoadScene("StartScene");
     }
 }

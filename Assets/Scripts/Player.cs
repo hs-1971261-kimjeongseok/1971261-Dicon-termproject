@@ -13,15 +13,19 @@ public class Player : MonoBehaviour
     public Vector3[] hpRotation;
     private Quaternion currentRotation = Quaternion.Euler(0, 0, 0);
     private int maxHP = 4;
+    public GameManager manager;
 
     public bool canMove = true;
+    private bool isInvincible = false; // 무적 상태를 나타내는 변수
+    private float invincibleTime = 0f; // 무적 시간 카운트
 
     public void decideRotation(int curHP)
     {
-        if(curHP<0) { return;}
-        if(curHP>maxHP) { curHP = maxHP; }
+        if (curHP < 0) { return; }
+        if (curHP > maxHP) { curHP = maxHP; }
         currentRotation = Quaternion.Euler(hpRotation[hp].x, hpRotation[hp].y, hpRotation[hp].z);
     }
+
     void Update()
     {
         transform.rotation = currentRotation;
@@ -46,6 +50,16 @@ public class Player : MonoBehaviour
             float zPos = Mathf.Clamp(transform.position.z, minZ, maxZ);
             transform.position = new Vector3(xPos, transform.position.y, zPos);
         }
+
+        if (isInvincible)
+        {
+            invincibleTime -= Time.deltaTime;
+            if (invincibleTime <= 0)
+            {
+                isInvincible = false;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             StartCoroutine(RerollAnimation());
@@ -54,25 +68,32 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        
         if (collision.transform.tag == "Enemy")
         {
             Destroy(collision.gameObject);
-            
+            reroll();
         }
     }
+
     public void reroll()
     {
-        StartCoroutine(RerollAnimation());
+        if (!isInvincible)
+        {
+            StartCoroutine(RerollAnimation());
+        }
     }
+
     private void Start()
     {
-        audioSource = this.gameObject.GetComponent<AudioSource>();  
+        audioSource = this.gameObject.GetComponent<AudioSource>();
     }
+
     private IEnumerator RerollAnimation()
     {
+        isInvincible = true; // 무적 상태로 설정
+        invincibleTime = 3f; // 무적 시간 3초 설정
         hp--;
-        if (hp < 1) { hp = 1; }
+        if (hp < 0) { manager.showGameOverUI(false); }
 
         audioSource.Stop();
         audioSource.Play();
@@ -81,7 +102,7 @@ public class Player : MonoBehaviour
         originalPosition = transform.position;
 
         // 점프 및 회전 애니메이션
-        float duration = 0.2f;
+        float duration = 0.35f;
         float elapsedTime = 0f;
         Vector3 targetPosition = originalPosition + new Vector3(0, 1, 0);
         Vector3 rotationPerFrame = new Vector3(1080f / (duration * 60), 1080f / (duration * 60), 0); // 60 FPS 기준
@@ -98,6 +119,7 @@ public class Player : MonoBehaviour
 
         // 원래 위치로 돌아오는 애니메이션
         elapsedTime = 0f;
+        duration = 0.05f;
         while (elapsedTime < duration)
         {
             transform.position = Vector3.Lerp(targetPosition, originalPosition, (elapsedTime / duration));
@@ -107,6 +129,5 @@ public class Player : MonoBehaviour
         }
 
         transform.position = originalPosition;
-        
     }
 }
