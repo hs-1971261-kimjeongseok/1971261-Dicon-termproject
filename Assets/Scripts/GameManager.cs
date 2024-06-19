@@ -131,6 +131,7 @@ public class GameManager : MonoBehaviour
         nextPlayerIndex = currentPlayerIndex;
         StartGame();
     }
+    
     void setMidPoints(int curStage)
     {
         int stage = UnityEngine.Random.Range(0, 5);
@@ -464,6 +465,44 @@ public class GameManager : MonoBehaviour
         postProcessings[currentStage].SetActive(true);
     }
 
+    int GetClosestDirection()
+    {
+        Vector3 playerPosition = player.transform.position;
+        Vector3[] midPoints = new Vector3[4];
+        for (int i = 0; i < 4; i++)
+        {
+            midPoints[i] = spawnPoints[currentPlayerIndex].map[i].transform.position;
+        }
+
+        float minDistance = float.MaxValue;
+        int closestDir = -1;
+
+        for (int i = 0; i < 4; i++)
+        {
+            float distance = Vector3.Distance(playerPosition, midPoints[i]);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestDir = i;
+            }
+        }
+
+        return closestDir;
+    }
+
+    private void Update()
+    {
+        if (boss)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                arrows[3].map[i].SetActive(false);
+            }
+            int closestDir = GetClosestDirection();
+            arrows[3].map[closestDir].SetActive(true);
+
+        }
+    }
 
     int nextSide = 0;
     int tmpDir = -1;
@@ -472,6 +511,7 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
+            
             if (transition)
             {
                 if (currentGame != null)
@@ -495,7 +535,7 @@ public class GameManager : MonoBehaviour
                 tmp[2].volume = 0.08f;
                 if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
 
-                yield return new WaitForSeconds(5.714285714285715f);
+                yield return new WaitForSeconds((5.714285714285715f / 2f));
                 boss = true;
                 // 음악 재생
                 PlayMusic(cubeMusicIndices[currentPlayerIndex], true);
@@ -518,17 +558,36 @@ public class GameManager : MonoBehaviour
 
                 // 플레이어 방향 선택 대기: 0.1초 동안 방향키 입력 대기
                 player.GetComponent<Player>().canMove = false;
-                tmpDir = UnityEngine.Random.Range(0, 4);
+                player.GetComponent<Rigidbody>().isKinematic = true;
+                tmpDir = GetClosestDirection();
+                switch (tmpDir)
+                {
+                    case 0:
+                        tmpDir = 0;
+                        break;
+                    case 1:
+                        tmpDir = 2;
+                        break;
+                    case 2:
+                        tmpDir = 3;
+                        break;
+                    case 3:
+                        tmpDir = 1;
+                        break;
+                }
+
+
                 player.transform.position = spawnPoints[currentPlayerIndex].map[tmpDir].transform.position;
                 isChoosingDirection = true;
                 float elapsedTime = 0f;
-                while (elapsedTime < 0.1f)
+                while (elapsedTime < 0.01f)
                 {
                     HandleDirectionInput();
                     elapsedTime += Time.deltaTime;
                     yield return null;
                 }
                 isChoosingDirection = false;
+                player.GetComponent<Rigidbody>().isKinematic = false;
 
                 if (shouldRotateCube)
                 {
@@ -543,7 +602,6 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    // 일반 게임 모드
                     Environment.transform.parent = CubeMap.transform;
                     switch (currentStage)
                     {
@@ -570,26 +628,29 @@ public class GameManager : MonoBehaviour
 
                     // 플레이어 위치 변경
                     yield return new WaitForSeconds(1f);
+
+                    if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
+                    {
+                        //피
+                        setMidPoints(currentStage);
+                        setMidPointArrow(currentStage);
+                        nokori--;
+                    }
+                    if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
+                    {
+                        //뭐로하지
+                        setMidPoints(currentStage);
+                        setMidPointArrow(currentStage);
+                        nokori--;
+                    }
+
                     currentPlayerIndex = nextPlayerIndex;
                     camMovement.targetPosition = planePositions[currentPlayerIndex];
                     camMovement.StartMoving(false);
                     SetPlayerPosition(currentPlayerIndex);
                 }
 
-                if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
-                {
-                    //피
-                    setMidPoints(currentStage);
-                    setMidPointArrow(currentStage);
-                    nokori--;
-                }
-                if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
-                {
-                    //뭐로하지
-                    setMidPoints(currentStage);
-                    setMidPointArrow(currentStage);
-                    nokori--;
-                }
+                
 
                 player.GetComponent<Player>().canMove = true;
 
@@ -613,6 +674,7 @@ public class GameManager : MonoBehaviour
                 player.GetComponent<Player>().canMove = false;
                 tmpDir = UnityEngine.Random.Range(0, 4);
                 player.transform.position = spawnPoints[currentPlayerIndex].map[tmpDir].transform.position;
+                player.GetComponent<Rigidbody>().isKinematic = true;
                 isChoosingDirection = true;
                 float elapsedTime = 0f;
                 while (elapsedTime < 2.333f)
@@ -622,6 +684,7 @@ public class GameManager : MonoBehaviour
                     yield return null;
                 }
                 isChoosingDirection = false;
+                player.GetComponent<Rigidbody>().isKinematic = false;
 
                 if (shouldRotateCube)
                 {
@@ -665,6 +728,22 @@ public class GameManager : MonoBehaviour
 
                     // 1초 동안 플레이어 위치 변경
                     yield return new WaitForSeconds(1f);
+
+                    if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
+                    {
+                        //피
+                        setMidPoints(currentStage);
+                        setMidPointArrow(currentStage);
+                        nokori--;
+                    }
+                    if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
+                    {
+                        //뭐로하지
+                        setMidPoints(currentStage);
+                        setMidPointArrow(currentStage);
+                        nokori--;
+                    }
+
                     currentPlayerIndex = nextPlayerIndex;
                     camMovement.targetPosition = planePositions[currentPlayerIndex];
                     camMovement.StartMoving(false);
@@ -678,30 +757,14 @@ public class GameManager : MonoBehaviour
                 
                 
                 shouldRotateCube = false; // 큐브 회전 플래그 초기화
-                if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
-                {
-                    //피
-                    setMidPoints(currentStage);
-                    setMidPointArrow(currentStage);
-                    nokori--;
-                }
-                if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
-                {
-                    //뭐로하지
-                    setMidPoints(currentStage);
-                    setMidPointArrow(currentStage);
-                    nokori--;
-                }
+                
                 if (nokori == 0) { transition = true; }
                 if (!transition)
                 {
                     // 음악 재생
                     PlayMusic(cubeMusicIndices[currentPlayerIndex]);
                 }
-                else
-                {
-                    
-                }
+
             }
 
         }
