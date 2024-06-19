@@ -71,6 +71,8 @@ public class GameManager : MonoBehaviour
     public Map[] bossMusicCycle;
     public int bossMusicIdx = 0;
 
+    public GameObject bossimg;
+
     public bool boss;
     void PlayMusic(int[] indices, bool boss = false)
     {
@@ -119,6 +121,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        bossimg.SetActive(false);
         setCubetextures();
         allCubes[0].setArray(currentCubes);
         audioSource = GetComponent<AudioSource>();
@@ -134,15 +137,24 @@ public class GameManager : MonoBehaviour
     
     void setMidPoints(int curStage)
     {
+        
         int stage = UnityEngine.Random.Range(0, 5);
         while(stage == curStage) { stage = UnityEngine.Random.Range(0, 5); }
         midPoints[0].map[0] = stage;
         midPoints[0].map[1] = UnityEngine.Random.Range(0, 16);
 
-        stage = UnityEngine.Random.Range(0, 5);
-        while (stage == curStage || stage == midPoints[0].map[0]) { stage = UnityEngine.Random.Range(0, 5); }
-        midPoints[1].map[0] = stage;
-        midPoints[1].map[1] = UnityEngine.Random.Range(0, 16);
+        if (!boss)
+        {
+            stage = UnityEngine.Random.Range(0, 5);
+            while (stage == curStage || stage == midPoints[0].map[0]) { stage = UnityEngine.Random.Range(0, 5); }
+            midPoints[1].map[0] = stage;
+            midPoints[1].map[1] = UnityEngine.Random.Range(0, 16);
+        }
+        else
+        {
+            midPoints[1].map[0] = -1;
+            midPoints[1].map[1] = -1;
+        }
     }
     void setMidPointArrow(int curstage)
     {
@@ -154,25 +166,43 @@ public class GameManager : MonoBehaviour
                 arrows[i].map[j].SetActive(false);
             }
         }
-        if (curstage == midPoints[0].map[0])
+        if (!boss)
         {
-            flags[0].transform.position = planePositions[midPoints[0].map[1]].position;
-            flags[0].SetActive(true);
-        }
-        if (curstage == midPoints[1].map[0])
-        {
-            flags[1].transform.position = planePositions[midPoints[1].map[1]].position;
-            flags[1].SetActive(true);
-        }
-        for (int i = 0; i < 4; i++)
-        {
-            if (maps[curstage].map[i] == midPoints[0].map[0])
+            if (curstage == midPoints[0].map[0])
             {
-                arrows[0].map[i].SetActive(true);
+                flags[0].transform.position = planePositions[midPoints[0].map[1]].position;
+                flags[0].SetActive(true);
             }
-            if (maps[curstage].map[i] == midPoints[1].map[0])
+            if (curstage == midPoints[1].map[0])
             {
-                arrows[1].map[i].SetActive(true);
+                flags[1].transform.position = planePositions[midPoints[1].map[1]].position;
+                flags[1].SetActive(true);
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                if (maps[curstage].map[i] == midPoints[0].map[0])
+                {
+                    arrows[0].map[i].SetActive(true);
+                }
+                if (maps[curstage].map[i] == midPoints[1].map[0])
+                {
+                    arrows[1].map[i].SetActive(true);
+                }
+            }
+        }
+        else
+        {
+            if (curstage == midPoints[0].map[0])
+            {
+                flags[2].transform.position = planePositions[midPoints[0].map[1]].position;
+                flags[2].SetActive(true);
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                if (maps[curstage].map[i] == midPoints[0].map[0])
+                {
+                    arrows[2].map[i].SetActive(true);
+                }
             }
         }
     }
@@ -504,6 +534,57 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    IEnumerator PlayTransitionCutscene()
+    {
+        // 카메라를 위로 올리는 애니메이션
+        Vector3 originalCamPos = camMovement.transform.position;
+        Vector3 middle = new Vector3(0, camMovement.transform.position.y, 20);
+        Vector3 targetCamPos = middle + new Vector3(0, 20, 0); // 카메라를 20 유닛 위로 올림
+        float duration = 5.2f; // 애니메이션 지속 시간
+        float elapsedTime = 0f;
+
+
+       
+        // 움직일 이미지를 활성화하고 떨림 효과와 함께 올리는 애니메이션
+        bossimg.SetActive(true);
+        Vector3 originalImagePos = bossimg.transform.position;
+        Vector3 targetImagePos = originalImagePos + new Vector3(0, 0, 30); // 이미지를 30 유닛 위로 올림
+
+        // 이미지를 위로 올림
+        while (elapsedTime < duration)
+        {
+            camMovement.transform.position = Vector3.Lerp(middle, targetCamPos, elapsedTime / duration);
+            float randomOffset = UnityEngine.Random.Range(-1f, 1f); // 좌우로 불연속적으로 흔들리게 함
+            bossimg.transform.position = Vector3.Lerp(originalImagePos, targetImagePos, elapsedTime / duration) + new Vector3(randomOffset, 0, 0); // 떨림 효과 추가
+            
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        bossimg.transform.position = targetImagePos;
+        camMovement.transform.position = targetCamPos;
+
+
+       
+
+        // 움직일 이미지를 원래 위치로 되돌리고 비활성화
+        bossimg.transform.position = originalImagePos;
+        bossimg.SetActive(false);
+
+        // 카메라를 원래 위치로 되돌리는 애니메이션
+        elapsedTime = 0f;
+        duration = 0.5f; // 애니메이션 지속 시간
+        while (elapsedTime < duration)
+        {
+            camMovement.transform.position = Vector3.Lerp(targetCamPos, originalCamPos, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        camMovement.transform.position = originalCamPos;
+        // 일정 시간 대기 (음악 재생 시간)
+        yield return new WaitForSeconds(0.014285714285715f); // 이미지를 일정 시간 동안 유지
+    }
+
+
     int nextSide = 0;
     int tmpDir = -1;
     bool transition = false;
@@ -527,7 +608,12 @@ public class GameManager : MonoBehaviour
                 tmp[2].volume = 0.08f;
                 if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
 
-                yield return new WaitForSeconds(5.714285714285715f);
+
+                // 컷신 시작
+                yield return StartCoroutine(PlayTransitionCutscene());
+
+                
+                //yield return new WaitForSeconds(5.714285714285715f);
 
                 tmp[2].Stop();
                 tmp[2].clip = bossmusics[1 + musicoffset[currentStage].offsets[0]];
@@ -541,6 +627,9 @@ public class GameManager : MonoBehaviour
                 PlayMusic(cubeMusicIndices[currentPlayerIndex], true);
                 player.GetComponent<Player>().canMove = true;
                 SetPlayerPosition(currentPlayerIndex, true);
+
+                setMidPoints(currentStage);
+                setMidPointArrow(currentStage);
 
                 transition = false;
                 
@@ -626,23 +715,16 @@ public class GameManager : MonoBehaviour
                     }
                     Environment.transform.parent = null;
 
+                    if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
+                    {
+                        Time.timeScale = 0f;
+                    }
+
                     // 플레이어 위치 변경
                     yield return new WaitForSeconds(1f);
 
-                    if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
-                    {
-                        //피
-                        setMidPoints(currentStage);
-                        setMidPointArrow(currentStage);
-                        nokori--;
-                    }
-                    if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
-                    {
-                        //뭐로하지
-                        setMidPoints(currentStage);
-                        setMidPointArrow(currentStage);
-                        nokori--;
-                    }
+                    
+
 
                     currentPlayerIndex = nextPlayerIndex;
                     camMovement.targetPosition = planePositions[currentPlayerIndex];
@@ -757,14 +839,13 @@ public class GameManager : MonoBehaviour
                 
                 
                 shouldRotateCube = false; // 큐브 회전 플래그 초기화
-                
                 if (nokori == 0) { transition = true; }
                 if (!transition)
                 {
                     // 음악 재생
                     PlayMusic(cubeMusicIndices[currentPlayerIndex]);
                 }
-
+                
             }
 
         }

@@ -72,6 +72,7 @@ public class Player : MonoBehaviour
     private IEnumerator RerollAnimation()
     {
         hp--;
+        if (hp < 1) { hp = 1; }
 
         audioSource.Stop();
         audioSource.Play();
