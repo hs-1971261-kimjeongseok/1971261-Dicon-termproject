@@ -654,6 +654,8 @@ public class GameManager : MonoBehaviour
                 {
                     currentGame.GameStop();
                 }
+                player.GetComponent<Player>().increaseHP();
+                player.GetComponent<Player>().decideRotation(player.GetComponent<Player>().hp);
 
                 // 플레이어 방향 선택 대기: 0.1초 동안 방향키 입력 대기
                 player.GetComponent<Player>().canMove = false;
@@ -708,6 +710,7 @@ public class GameManager : MonoBehaviour
 
                         boss = false;
                         showGameOverUI(true);
+                        yield break;
                     }
 
                     // 큐브 회전
@@ -761,6 +764,7 @@ public class GameManager : MonoBehaviour
                         yield return StartCoroutine(PlayTransitionCutscene());
                         boss = false;
                         showGameOverUI(true);
+                        yield break;
                     }
 
 
@@ -787,7 +791,7 @@ public class GameManager : MonoBehaviour
                 {
                     currentGame.GameStop();
                 }
-                player.GetComponent<Player>().hp++;
+                player.GetComponent<Player>().increaseHP();
                 player.GetComponent<Player>().decideRotation(player.GetComponent<Player>().hp);
 
                 // 2.333초 동안 방향키 입력 대기
@@ -852,6 +856,7 @@ public class GameManager : MonoBehaviour
                     if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
                     {
                         //피
+                        player.GetComponent<Player>().maxHP++;
                         setMidPoints(currentStage);
                         setMidPointArrow(currentStage);
                         nokori--;
@@ -859,6 +864,7 @@ public class GameManager : MonoBehaviour
                     if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
                     {
                         //뭐로하지
+                        player.GetComponent<Player>().maxinvincible += 0.5f;
                         setMidPoints(currentStage);
                         setMidPointArrow(currentStage);
                         nokori--;
@@ -877,7 +883,7 @@ public class GameManager : MonoBehaviour
 
                 
                 shouldRotateCube = false; // 큐브 회전 플래그 초기화
-                transition = true;//for test
+                //transition = true;//for test
                 if (nokori == 0) { transition = true; }
                 if (!transition)
                 {

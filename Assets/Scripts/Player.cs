@@ -12,18 +12,23 @@ public class Player : MonoBehaviour
     public int hp = 3;
     public Vector3[] hpRotation;
     private Quaternion currentRotation = Quaternion.Euler(0, 0, 0);
-    private int maxHP = 4;
+    public int maxHP = 4;
     public GameManager manager;
 
     public bool canMove = true;
     private bool isInvincible = false; // 무적 상태를 나타내는 변수
     private float invincibleTime = 0f; // 무적 시간 카운트
+    public float maxinvincible = 2f;
 
+    public void increaseHP()
+    {
+        if (hp < maxHP) { hp++; }
+    }
     public void decideRotation(int curHP)
     {
         if (curHP < 0) { return; }
         if (curHP > maxHP) { curHP = maxHP; }
-        currentRotation = Quaternion.Euler(hpRotation[hp].x, hpRotation[hp].y, hpRotation[hp].z);
+        currentRotation = Quaternion.Euler(hpRotation[hp-1].x, hpRotation[hp-1].y, hpRotation[hp-1].z);
     }
 
     void Update()
@@ -91,9 +96,9 @@ public class Player : MonoBehaviour
     private IEnumerator RerollAnimation()
     {
         isInvincible = true; // 무적 상태로 설정
-        invincibleTime = 3f; // 무적 시간 3초 설정
+        invincibleTime = maxinvincible; // 무적 시간 3초 설정
         hp--;
-        if (hp < 0) { manager.showGameOverUI(false); }
+        if (hp < 1) { manager.showGameOverUI(false); }
 
         audioSource.Stop();
         audioSource.Play();
