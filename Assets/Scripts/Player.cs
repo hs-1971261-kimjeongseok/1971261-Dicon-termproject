@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -157,7 +158,16 @@ public class Player : MonoBehaviour
         if (hp < 1) { manager.showGameOverUI(false); }
 
         barrier1.SetActive(false);
-        barrier2.SetActive(false);
+
+        bool t = false;
+        if (barrier2.activeSelf)
+        {
+            t = true;
+            barrier2.SetActive(false);
+        }
+        
+
+       
 
         audioSource.Stop();
         audioSource.Play();
@@ -194,6 +204,7 @@ public class Player : MonoBehaviour
 
         transform.position = originalPosition;
         barrier1.SetActive(true);
-        //barrier2.SetActive(true);
+        if (t) { barrier2.SetActive(true); }
+        
     }
 }

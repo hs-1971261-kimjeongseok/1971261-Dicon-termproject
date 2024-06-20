@@ -46,6 +46,20 @@ public class Enemy : MonoBehaviour
                 
             }
         }
-        if(collision.gameObject.transform.tag == "Barrier") { Destroy(gameObject); }
+        if(collision.gameObject.transform.tag == "Barrier") { 
+            // 충돌 지점 얻기
+            ContactPoint contact = collision.contacts[0];
+            Vector3 hitPosition = contact.point;
+            // 파티클 이펙트를 충돌 지점에서 생성
+            GameObject hit = Instantiate(hitEffectPrefab, hitPosition, Quaternion.identity);
+            //hit.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            ParticleSystem particleSystem = hit.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                var mainModule = particleSystem.main;
+                mainModule.simulationSpeed = 0.5f; // 2배 느리게 재생
+            }
+            Destroy(gameObject);
+        }
     }
 }

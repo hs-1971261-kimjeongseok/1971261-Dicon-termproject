@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletDefence : Games
+public class RandomBulletDefence : Games
 {
     public GameObject bulletPrefab;
     public Transform[] spawnPoints; // 총알 발사 위치
@@ -14,7 +14,9 @@ public class BulletDefence : Games
     {
         gameCoroutine = StartCoroutine(SpawnBullets());
         manager.player.GetComponent<Player>().barrier = true; // 플레이어의 barrier를 true로 설정
+        
         manager.player.GetComponent<Player>().barrier1.SetActive(true);
+        manager.player.GetComponent<Player>().barrier2.SetActive(true);
     }
 
     public override void GameStop()
@@ -29,19 +31,22 @@ public class BulletDefence : Games
             Destroy(bullet.gameObject);
         }
         manager.player.GetComponent<Player>().barrier1.SetActive(false);
-        manager.player.GetComponent<Player>().barrier = false; 
+        manager.player.GetComponent<Player>().barrier2.SetActive(false);
+        manager.player.GetComponent<Player>().barrier = false; // 플레이어의 barrier를 true로 설정
     }
 
     IEnumerator SpawnBullets()
     {
         while (true)
         {
-            yield return new WaitForSeconds(0.25f);
-            int spawnIndex = Random.Range(0, 4); // 0~3 범위의 랜덤 인덱스 선택
+            yield return new WaitForSeconds(0.12f); // 더 빠른 간격으로 총알 발사
+            int spawnIndex = Random.Range(0, spawnPoints.Length); // 랜덤 스폰 포인트 선택
             Transform nextSpawnPoint = spawnPoints[spawnIndex];
-            GameObject bullet = Instantiate(bulletPrefab, nextSpawnPoint.position, Quaternion.Euler(90,0,0));
-            bullet.GetComponent<Bullet>().speed /= 1.2f;
-            yield return new WaitForSeconds(0.1f); // 0.5초마다 총알 발사
+            GameObject bullet = Instantiate(bulletPrefab, nextSpawnPoint.position, Quaternion.Euler(90, 0, 0));
+            bullet.GetComponent<Bullet>().speed /= 2f;
+            bullet.GetComponent<Bullet>().centerdodgegame = true;
+            bullet.GetComponent<Bullet>().bulletdodgegame = false;
+            //bullet.GetComponent<Bullet>().direction = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
         }
     }
 }
