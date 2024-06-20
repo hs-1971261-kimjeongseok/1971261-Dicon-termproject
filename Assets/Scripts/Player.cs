@@ -35,9 +35,6 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if(isInvincible){ invObject.SetActive(true); }
-        else { invObject.SetActive(false); }
-
         transform.rotation = currentRotation;
         if (canMove)
         {
@@ -63,12 +60,14 @@ public class Player : MonoBehaviour
 
         if (isInvincible)
         {
+            invObject.SetActive(true);
             invincibleTime -= Time.deltaTime;
             if (invincibleTime <= 0)
             {
                 isInvincible = false;
             }
         }
+        else { invObject.SetActive(false); }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -96,12 +95,13 @@ public class Player : MonoBehaviour
     private void Start()
     {
         audioSource = this.gameObject.GetComponent<AudioSource>();
+        invincibleTime = 1f; // 게임 시작 시 무적 시간 1초
     }
 
     private IEnumerator RerollAnimation()
     {
         isInvincible = true; // 무적 상태로 설정
-        invincibleTime = maxinvincible; // 무적 시간 3초 설정
+        invincibleTime = maxinvincible; // 무적 시간 설정
         hp--;
         if (hp < 1) { manager.showGameOverUI(false); }
 
