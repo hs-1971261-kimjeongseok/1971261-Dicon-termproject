@@ -11,6 +11,7 @@ public class Bullet : Enemy
     public float acceleration = 2.0f; // 속도 증가율
 
     public bool bulletdodgegame = true;
+    public bool centerdodgegame = false;
 
     void Start()
     {
@@ -18,12 +19,13 @@ public class Bullet : Enemy
         target = GameObject.FindGameObjectWithTag("Player").transform;
         Destroy(gameObject, 5f); // 5초 후 자동 파괴
         if (bulletdodgegame) { direction = (new Vector3(target.position.x, 0.183f, target.position.z) - transform.position).normalized; }
+        else if (centerdodgegame) { direction = new Vector3(Random.Range(-1f,1f), 0.183f, Random.Range(-1f, 1f)); }
         else { direction = new Vector3(0,0,-1); }
     }
 
     void Update()
     {
-        if (!bulletdodgegame) { speed += acceleration * Time.deltaTime * 2; }
+        if (!bulletdodgegame && !centerdodgegame) { speed += acceleration * Time.deltaTime * 2; }
         if (target != null)
         {
 
