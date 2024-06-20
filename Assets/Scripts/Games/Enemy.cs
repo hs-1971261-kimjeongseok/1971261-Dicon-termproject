@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public GameObject hitEffectPrefab;
+    public bool hard = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,7 +39,11 @@ public class Enemy : MonoBehaviour
                     mainModule.simulationSpeed = 0.5f; // 2배 느리게 재생
                 }
                 tmp.reroll();
-                Destroy(gameObject);
+                if (!hard)
+                {
+                    Destroy(gameObject);
+                }
+                
             }
             else
             {
