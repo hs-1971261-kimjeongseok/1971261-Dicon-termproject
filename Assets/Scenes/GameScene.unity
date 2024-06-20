@@ -6523,6 +6523,7 @@ MonoBehaviour:
   bossMusicIdx: 0
   bossimg: {fileID: 310606347}
   boss: 0
+  closestDir: 0
   gameover: 0
   gameoverset: {fileID: 1071427661}
   gameovertext: {fileID: 1989537473}

@@ -404,6 +404,7 @@ public class GameManager : MonoBehaviour
         gameInstance.transform.position = new Vector3(planePositions[index].position.x, 0, planePositions[index].position.z);
         gameInstance.transform.parent = this.transform;
         currentGame = gameInstance.GetComponent<Games>();
+        currentGame.manager = this;
         currentGame.GameStart();
     }
 
@@ -524,17 +525,18 @@ public class GameManager : MonoBehaviour
         }
 
         return closestDir;
-    }
+    } // 상 좌 우 하
 
+    public int closestDir;
     private void Update()
     {
+        closestDir = GetClosestDirection();
         if (boss)
         {
             for (int i = 0; i < 4; i++)
             {
                 arrows[3].map[i].SetActive(false);
             }
-            int closestDir = GetClosestDirection();
             arrows[3].map[closestDir].SetActive(true);
 
         }
