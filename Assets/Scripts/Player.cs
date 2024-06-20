@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     public GameObject barrier1;
     public GameObject barrier2;
     public GameObject barrierSet;
+    public GameObject wallSet;
 
     public void increaseHP()
     {
@@ -44,6 +45,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         barrierSet.transform.position = manager.planePositions[manager.currentPlayerIndex].position;
+        wallSet.transform.position = manager.planePositions[manager.currentPlayerIndex].position;
 
         transform.rotation = currentRotation;
         if (canMove)

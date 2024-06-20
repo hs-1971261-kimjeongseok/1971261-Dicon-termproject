@@ -131,9 +131,9 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!114 &8912690851705357317
 MonoBehaviour:
@@ -150,6 +150,7 @@ MonoBehaviour:
   hitEffectPrefab: {fileID: 3463157229188906966, guid: 47096eff328e11a418ace7db2d72aa97, type: 3}
   hard: 0
   speed: 10
+  direction: {x: 0, y: 0, z: 0}
   acceleration: 2
   bulletdodgegame: 1
   centerdodgegame: 0
