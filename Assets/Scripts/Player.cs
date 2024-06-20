@@ -20,6 +20,8 @@ public class Player : MonoBehaviour
     private float invincibleTime = 0f; // 무적 시간 카운트
     public float maxinvincible = 2f;
 
+    public GameObject invObject;
+
     public void increaseHP()
     {
         if (hp < maxHP) { hp++; }
@@ -33,6 +35,9 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if(isInvincible){ invObject.SetActive(true); }
+        else { invObject.SetActive(false); }
+
         transform.rotation = currentRotation;
         if (canMove)
         {
