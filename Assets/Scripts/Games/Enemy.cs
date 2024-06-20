@@ -45,15 +45,7 @@ public class Enemy : MonoBehaviour
                 }
                 
             }
-            else
-            {
-                
-            }
-            
-
-            
-            
-            
         }
+        if(collision.gameObject.transform.tag == "Barrier") { Destroy(gameObject); }
     }
 }

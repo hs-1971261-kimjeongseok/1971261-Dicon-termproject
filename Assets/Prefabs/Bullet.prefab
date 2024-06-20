@@ -94,7 +94,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 804773528098652980}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 413dd8283f118684fa5fe246d5d949f1, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -147,5 +147,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ace8196c73a16444a4bbda5240bcbc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
   hitEffectPrefab: {fileID: 3463157229188906966, guid: 47096eff328e11a418ace7db2d72aa97, type: 3}
+  hard: 0
+  speed: 10
+  acceleration: 2
+  bulletdodgegame: 1
+  centerdodgegame: 0

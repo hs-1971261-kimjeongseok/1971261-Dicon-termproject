@@ -22,40 +22,85 @@ public class Player : MonoBehaviour
 
     public GameObject invObject;
 
+    public bool barrier = false;
+    public GameObject barrier1;
+    public GameObject barrier2;
+    public GameObject barrierSet;
+
     public void increaseHP()
     {
         if (hp < maxHP) { hp++; }
     }
     public void decideRotation(int curHP)
     {
+
         if (curHP < 0) { return; }
         if (curHP > maxHP) { curHP = maxHP; }
         currentRotation = Quaternion.Euler(hpRotation[hp-1].x, hpRotation[hp-1].y, hpRotation[hp-1].z);
+
     }
 
     void Update()
     {
+        barrierSet.transform.position = manager.planePositions[manager.currentPlayerIndex].position;
+
         transform.rotation = currentRotation;
         if (canMove)
         {
-            float moveX = Input.GetAxis("Horizontal");
-            float moveZ = Input.GetAxis("Vertical");
+            if (barrier)
+            {
+               
+                if (Input.GetKey(KeyCode.LeftArrow))
+                {
+                    this.transform.position = manager.planePositions[manager.currentPlayerIndex].position + new Vector3(-0.01f, 0, 0);
+                    barrierSet.transform.rotation = Quaternion.Euler(0, 90f, 0);
+                    //currentRotation = Quaternion.Euler(hpRotation[hp - 1].x, hpRotation[hp - 1].y - 90f, hpRotation[hp - 1].z);
+                }
+                else if (Input.GetKey(KeyCode.RightArrow))
+                {
+                    this.transform.position = manager.planePositions[manager.currentPlayerIndex].position + new Vector3(0.01f, 0, 0);
+                    barrierSet.transform.rotation = Quaternion.Euler(0, -90f, 0);
+                    //currentRotation = Quaternion.Euler(hpRotation[hp - 1].x, hpRotation[hp - 1].y + 90f, hpRotation[hp - 1].z);
+                }
+                else if (Input.GetKey(KeyCode.UpArrow))
+                {
+                    this.transform.position = manager.planePositions[manager.currentPlayerIndex].position + new Vector3(0, 0, 0.01f);
+                    barrierSet.transform.rotation = Quaternion.Euler(0, 180f, 0);
+                    //currentRotation = Quaternion.Euler(hpRotation[hp - 1].x, hpRotation[hp - 1].y, hpRotation[hp - 1].z);
+                }
+                else if (Input.GetKey(KeyCode.DownArrow))
+                {
+                    this.transform.position = manager.planePositions[manager.currentPlayerIndex].position + new Vector3(0, 0, -0.01f);
+                    barrierSet.transform.rotation = Quaternion.Euler(0, 0f, 0);
+                    //currentRotation = Quaternion.Euler(hpRotation[hp - 1].x, hpRotation[hp - 1].y + 180f, hpRotation[hp - 1].z);
+                }
+                else
+                {
+                    this.transform.position = manager.planePositions[manager.currentPlayerIndex].position;
+                }
 
-            moveDirection = new Vector3(moveX, 0, moveZ).normalized;
+            }
+            else
+            {
+                float moveX = Input.GetAxis("Horizontal");
+                float moveZ = Input.GetAxis("Vertical");
 
-            transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
+                moveDirection = new Vector3(moveX, 0, moveZ).normalized;
 
-            Vector3 cubeCenter = currentPosition.position;
-            float size = 4.75f;
+                transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
 
-            float minX = cubeCenter.x - size;
-            float maxX = cubeCenter.x + size;
-            float minZ = cubeCenter.z - size;
-            float maxZ = cubeCenter.z + size;
+                Vector3 cubeCenter = currentPosition.position;
+                float size = 4.75f;
 
-            float xPos = Mathf.Clamp(transform.position.x, minX, maxX);
-            float zPos = Mathf.Clamp(transform.position.z, minZ, maxZ);
-            transform.position = new Vector3(xPos, transform.position.y, zPos);
+                float minX = cubeCenter.x - size;
+                float maxX = cubeCenter.x + size;
+                float minZ = cubeCenter.z - size;
+                float maxZ = cubeCenter.z + size;
+
+                float xPos = Mathf.Clamp(transform.position.x, minX, maxX);
+                float zPos = Mathf.Clamp(transform.position.z, minZ, maxZ);
+                transform.position = new Vector3(xPos, transform.position.y, zPos);
+            }
         }
 
         if (isInvincible)
@@ -67,11 +112,9 @@ public class Player : MonoBehaviour
                 isInvincible = false;
             }
         }
-        else { invObject.SetActive(false); }
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        else
         {
-            StartCoroutine(RerollAnimation());
+            invObject.SetActive(false);
         }
     }
 
@@ -106,10 +149,15 @@ public class Player : MonoBehaviour
 
     private IEnumerator RerollAnimation()
     {
+        
+        
         isInvincible = true; // 무적 상태로 설정
         invincibleTime = maxinvincible; // 무적 시간 설정
         hp--;
         if (hp < 1) { manager.showGameOverUI(false); }
+
+        barrier1.SetActive(false);
+        barrier2.SetActive(false);
 
         audioSource.Stop();
         audioSource.Play();
@@ -145,5 +193,7 @@ public class Player : MonoBehaviour
         }
 
         transform.position = originalPosition;
+        barrier1.SetActive(true);
+        //barrier2.SetActive(true);
     }
 }
