@@ -6475,7 +6475,23 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 86ca786598662504cb6d30bb8c1925c1, type: 2}
   - {fileID: 2100000, guid: ecb77553017220c4da6e781c12dfdece, type: 2}
   - {fileID: 2100000, guid: 6752a97ced34f344bad5c03e7b1aa03a, type: 2}
-  BulletDodgeGamePrefab: {fileID: 7337236263946837138, guid: eee2bb556b962fc4696d29725fad28d7, type: 3}
+  games:
+  - {fileID: 7337236263946837138, guid: eee2bb556b962fc4696d29725fad28d7, type: 3}
+  - {fileID: 7530847959833644780, guid: 63b1b5311c361ec459c22e3f6975d586, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   nokori: 1
   maps:
   - map: 03000000010000000200000004000000

@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     public GameManager manager;
 
     public bool canMove = true;
-    private bool isInvincible = false; // 무적 상태를 나타내는 변수
+    public bool isInvincible = false; // 무적 상태를 나타내는 변수
     private float invincibleTime = 0f; // 무적 시간 카운트
     public float maxinvincible = 2f;
 
@@ -95,7 +95,13 @@ public class Player : MonoBehaviour
     private void Start()
     {
         audioSource = this.gameObject.GetComponent<AudioSource>();
-        invincibleTime = 1f; // 게임 시작 시 무적 시간 1초
+        setInvincible(1f);
+    }
+
+    public void setInvincible(float time)
+    {
+        invincibleTime = time;
+        isInvincible = true;
     }
 
     private IEnumerator RerollAnimation()

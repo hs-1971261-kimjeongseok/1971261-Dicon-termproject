@@ -57,7 +57,8 @@ public class GameManager : MonoBehaviour
 
     public Material[] textures;
 
-    public GameObject BulletDodgeGamePrefab; // 피하기 게임 프리팹
+    public GameObject[] games;
+    // 1 총알피하기 2 원 피하기
 
     private Games currentGame;
 
@@ -77,6 +78,44 @@ public class GameManager : MonoBehaviour
 
     private Coroutine gameRoutineCoroutine;
 
+
+    void SetPlayerPosition(int index, bool first = false)
+    {
+
+        if (!first)
+        {
+            player.transform.position = spawnPoints[index].map[nextSpawnpoint].transform.position;
+        }
+        else
+        {
+            player.transform.position = planePositions[index].position;
+        }
+        player.GetComponent<Player>().currentPosition = planePositions[index];
+
+        if (!shouldRotateCube)
+        {
+            camMovement.targetPosition = planePositions[index];
+            camMovement.StartMoving(false);
+        }
+
+
+        // 이전에 실행 중이던 게임을 중지하고 제거
+        if (currentGame != null)
+        {
+            currentGame.GameStop();
+            Destroy(currentGame.gameObject);
+        }
+
+        // 새로운 게임을 현재 큐브에 인스턴스화하고 시작
+        GameObject gameInstance = Instantiate(games[1]);
+        gameInstance.transform.localScale = Vector3.one;
+        gameInstance.transform.position = new Vector3(planePositions[index].position.x, 0, planePositions[index].position.z);
+        gameInstance.transform.parent = this.transform;
+        currentGame = gameInstance.GetComponent<Games>();
+        currentGame.manager = this;
+        player.GetComponent<Player>().setInvincible(1f); // 플레이어 1초 무적 시간 부여
+        currentGame.GameStart();
+    }
 
     public bool boss;
     void PlayMusic(int[] indices, bool boss = false)
@@ -371,42 +410,7 @@ public class GameManager : MonoBehaviour
    
     
 
-    void SetPlayerPosition(int index, bool first = false)
-    {
-        
-        if (!first)
-        {
-            player.transform.position = spawnPoints[index].map[nextSpawnpoint].transform.position;
-        }
-        else
-        {
-            player.transform.position = planePositions[index].position;
-        }
-        player.GetComponent<Player>().currentPosition = planePositions[index];
-
-        if (!shouldRotateCube)
-        {
-            camMovement.targetPosition = planePositions[index];
-            camMovement.StartMoving(false);
-        }
-        
-
-        // 이전에 실행 중이던 게임을 중지하고 제거
-        if (currentGame != null)
-        {
-            currentGame.GameStop();
-            Destroy(currentGame.gameObject);
-        }
-
-        // 새로운 게임을 현재 큐브에 인스턴스화하고 시작
-        GameObject gameInstance = Instantiate(BulletDodgeGamePrefab);
-        gameInstance.transform.localScale = Vector3.one;
-        gameInstance.transform.position = new Vector3(planePositions[index].position.x, 0, planePositions[index].position.z);
-        gameInstance.transform.parent = this.transform;
-        currentGame = gameInstance.GetComponent<Games>();
-        currentGame.manager = this;
-        currentGame.GameStart();
-    }
+    
 
     int[] GetAdjacent(int index)
     {
