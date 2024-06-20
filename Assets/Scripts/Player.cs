@@ -205,7 +205,9 @@ public class Player : MonoBehaviour
         }
 
         transform.position = originalPosition;
-        barrier1.SetActive(true);
+
+        if (barrier) { barrier1.SetActive(true); }
+        
         if (t) { barrier2.SetActive(true); }
         
     }
