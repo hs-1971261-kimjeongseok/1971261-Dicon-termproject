@@ -34,6 +34,8 @@ public class Player : MonoBehaviour
 
     public bool canjump = false;
 
+    public bool onlyjump = false;
+
     public void increaseHP()
     {
         if (hp < maxHP) { hp++; }
@@ -88,7 +90,7 @@ public class Player : MonoBehaviour
                 }
 
             }
-            else
+            else if(!onlyjump)
             {
                 float moveX = Input.GetAxis("Horizontal");
                 float moveZ = Input.GetAxis("Vertical");
@@ -178,7 +180,6 @@ public class Player : MonoBehaviour
         hp--;
         if (hp < 1) { manager.showGameOverUI(false); }
 
-        barrier1.SetActive(false);
 
         bool t = false;
         if (barrier2.activeSelf)
@@ -186,9 +187,15 @@ public class Player : MonoBehaviour
             t = true;
             barrier2.SetActive(false);
         }
-        
+        bool t2 = false;
+        if (barrier1.activeSelf)
+        {
+            t2 = true;
+            barrier1.SetActive(false);
+        }
 
-       
+
+
 
         audioSource.Stop();
         audioSource.Play();
@@ -225,7 +232,7 @@ public class Player : MonoBehaviour
 
         transform.position = originalPosition;
 
-        if (barrier) { barrier1.SetActive(true); }
+        if (t2) { barrier1.SetActive(true); }
         
         if (t) { barrier2.SetActive(true); }
         
