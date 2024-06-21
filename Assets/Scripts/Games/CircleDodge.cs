@@ -30,7 +30,10 @@ public class CircleDodge : Games
         while (true)
         {
             float randomrot = Random.Range(0f, 360f);
-            GameObject circle = Instantiate(circlePrefab, manager.planePositions[manager.currentPlayerIndex].transform.position, Quaternion.Euler(90, 0, randomrot));
+
+            Vector3 spawnPosition = manager.planePositions[manager.currentPlayerIndex].transform.position;
+
+            GameObject circle = Instantiate(circlePrefab, spawnPosition, Quaternion.Euler(90, 0, randomrot));
 
             yield return new WaitForSeconds(1f); // 0.5초마다 총알 발사
         }

@@ -29,6 +29,11 @@ public class Player : MonoBehaviour
     public GameObject barrierSet;
     public GameObject wallSet;
 
+    public bool isGrounded = true;
+    public float jumpForce = 0.3f;
+
+    public bool canjump = false;
+
     public void increaseHP()
     {
         if (hp < maxHP) { hp++; }
@@ -104,6 +109,16 @@ public class Player : MonoBehaviour
                 float zPos = Mathf.Clamp(transform.position.z, minZ, maxZ);
                 transform.position = new Vector3(xPos, transform.position.y, zPos);
             }
+
+            if (canjump)
+            {
+                if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+                {
+                    this.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                    isGrounded = false; // 점프 중에는 지면에 있지 않음
+                }
+            }
+            
         }
 
         if (isInvincible)
@@ -127,6 +142,10 @@ public class Player : MonoBehaviour
         {
             Destroy(collision.gameObject);
             reroll();
+        }
+        if (collision.transform.tag == "Ground")
+        {
+            isGrounded = true;
         }
     }
 

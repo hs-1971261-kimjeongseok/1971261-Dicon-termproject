@@ -12,6 +12,7 @@ public class UpBulletDodge : Games
 
     public override void GameStart()
     {
+        manager.player.GetComponent<Player>().wallSet.SetActive(true);
         gameCoroutine = StartCoroutine(SpawnBullets());
     }
 
@@ -26,6 +27,7 @@ public class UpBulletDodge : Games
         {
             Destroy(bullet.gameObject);
         }
+        manager.player.GetComponent<Player>().wallSet.SetActive(false);
     }
 
     IEnumerator SpawnBullets()
@@ -42,7 +44,7 @@ public class UpBulletDodge : Games
             // 총알 생성
             GameObject bullet = Instantiate(ballPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
 
-            yield return new WaitForSeconds(0.5f); // 0.5초마다 총알 발사
+            yield return new WaitForSeconds(0.3f); // 0.5초마다 총알 발사
         }
     }
 }

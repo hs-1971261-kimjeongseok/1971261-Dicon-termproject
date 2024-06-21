@@ -13,6 +13,7 @@ public class RainDodge : Games
     public override void GameStart()
     {
         gameCoroutine = StartCoroutine(SpawnBullets());
+        
     }
 
     public override void GameStop()
@@ -26,6 +27,7 @@ public class RainDodge : Games
         {
             Destroy(bullet.gameObject);
         }
+        
     }
 
     IEnumerator SpawnBullets()
