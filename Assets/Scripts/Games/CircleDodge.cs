@@ -34,6 +34,7 @@ public class CircleDodge : Games
             Vector3 spawnPosition = manager.planePositions[manager.currentPlayerIndex].transform.position;
 
             GameObject circle = Instantiate(circlePrefab, spawnPosition, Quaternion.Euler(90, 0, randomrot));
+            circle.GetComponent<Circle>().dodge = true;
 
             yield return new WaitForSeconds(1f); // 0.5초마다 총알 발사
         }

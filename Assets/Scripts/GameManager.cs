@@ -78,6 +78,24 @@ public class GameManager : MonoBehaviour
 
     private Coroutine gameRoutineCoroutine;
 
+    private int[] gamesidx;
+    static void Shuffle(int[] array)
+    {
+        System.Random random = new System.Random();
+        for (int i = array.Length - 1; i > 0; i--)
+        {
+            int j = random.Next(i + 1);
+            Swap(array, i, j);
+        }
+    }
+
+    static void Swap(int[] array, int i, int j)
+    {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
 
     void SetPlayerPosition(int index, bool first = false)
     {
@@ -107,7 +125,8 @@ public class GameManager : MonoBehaviour
         }
 
         // 새로운 게임을 현재 큐브에 인스턴스화하고 시작
-        GameObject gameInstance = Instantiate(games[15]);
+        GameObject gameInstance = Instantiate(games[gamesidx[currentPlayerIndex]]);
+        //GameObject gameInstance = Instantiate(games[1]);
         gameInstance.transform.localScale = Vector3.one;
         gameInstance.transform.position = new Vector3(planePositions[index].position.x, 0, planePositions[index].position.z);
         gameInstance.transform.parent = this.transform;
@@ -172,6 +191,9 @@ public class GameManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         cubeMusicIndices = new int[16][]; // 각 큐브 위치별 음악 조합 배열
         InitializeCubeMusicIndices(); // 큐브 위치별 음악 조합을 초기화
+
+        gamesidx = Enumerable.Range(0, 16).ToArray();
+        Shuffle(gamesidx);
 
         setMidPoints(0);
         setMidPointArrow(0);
