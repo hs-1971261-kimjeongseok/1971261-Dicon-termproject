@@ -37,7 +37,8 @@ public class BulletJump : Games
     {
         while (true)
         {
-            manager.player.transform.position = manager.planePositions[manager.currentPlayerIndex].position;
+            manager.player.transform.position = new Vector3(manager.planePositions[manager.currentPlayerIndex].position.x,
+                manager.player.transform.position.y, manager.planePositions[manager.currentPlayerIndex].position.z);
             yield return new WaitForSeconds(0.11f);
             int spawnIndex = Random.Range(0, 4); // 0~3 범위의 랜덤 인덱스 선택
             Transform nextSpawnPoint = spawnPoints[spawnIndex];
