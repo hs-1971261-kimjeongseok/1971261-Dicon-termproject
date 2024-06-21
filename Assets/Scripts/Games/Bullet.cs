@@ -18,6 +18,7 @@ public class Bullet : Enemy
 
     void Start()
     {
+        isbullet = true;
         //transform.Rotate(new Vector3(90,0,0));
         target = GameObject.FindGameObjectWithTag("Player").transform;
         Destroy(gameObject, 5f); // 5초 후 자동 파괴

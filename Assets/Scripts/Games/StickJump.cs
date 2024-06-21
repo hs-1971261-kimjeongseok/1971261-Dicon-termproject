@@ -14,6 +14,7 @@ public class StickJump : Games
     {
         gameCoroutine = StartCoroutine(Spawnsticks());
         manager.player.GetComponent<Player>().canjump = true;
+        manager.player.GetComponent<Player>().isGrounded = true;
     }
 
     public override void GameStop()

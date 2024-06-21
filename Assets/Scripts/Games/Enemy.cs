@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
 {
     public GameObject hitEffectPrefab;
     public bool hard = false;
+    public bool isbullet = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,8 +44,9 @@ public class Enemy : MonoBehaviour
                 {
                     Destroy(gameObject);
                 }
-                
+
             }
+            else { if (isbullet) { Destroy(gameObject); } }
         }
         if(collision.gameObject.transform.tag == "Barrier") { 
             // 충돌 지점 얻기

@@ -36,9 +36,24 @@ public class Player : MonoBehaviour
 
     public bool onlyjump = false;
 
+    public ChangeText hpIncreaseText;
+
     public void increaseHP()
     {
-        if (hp < maxHP) { hp++; }
+        if(manager.hpplus == false)
+        {
+            manager.hpplus = true;
+        }
+        else
+        {
+            if (hp < maxHP) { hp++; }
+            manager.hpplus = false;
+            hpIncreaseText.ShowHPIncreaseText(transform.position);
+        }
+
+        
+
+        
     }
     public void decideRotation(int curHP)
     {
@@ -145,7 +160,7 @@ public class Player : MonoBehaviour
             Destroy(collision.gameObject);
             reroll();
         }
-        if (collision.transform.tag == "Ground")
+        if (collision.transform.tag == "Ground" || collision.transform.tag == "tower")
         {
             isGrounded = true;
         }

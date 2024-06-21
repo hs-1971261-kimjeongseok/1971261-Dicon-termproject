@@ -78,6 +78,8 @@ public class GameManager : MonoBehaviour
 
     private Coroutine gameRoutineCoroutine;
 
+    public bool hpplus = false;
+
     private int[] gamesidx;
     static void Shuffle(int[] array)
     {
@@ -197,6 +199,8 @@ public class GameManager : MonoBehaviour
 
         setMidPoints(0);
         setMidPointArrow(0);
+
+        currentPlayerIndex = UnityEngine.Random.Range(0, gamesidx.Length);
 
         nextPlayerIndex = currentPlayerIndex;
         StartGame();
@@ -573,7 +577,7 @@ public class GameManager : MonoBehaviour
     {
         // 카메라를 위로 올리는 애니메이션
         Vector3 originalCamPos = camMovement.transform.position;
-        Vector3 middle = new Vector3(0, camMovement.transform.position.y, 20);
+        Vector3 middle = new Vector3(0, camMovement.transform.position.y + 20, 20);
         Vector3 targetCamPos = middle + new Vector3(0, 20, 0); // 카메라를 20 유닛 위로 올림
         float duration = 5.2f; // 애니메이션 지속 시간
         float elapsedTime = 0f;
@@ -884,7 +888,9 @@ public class GameManager : MonoBehaviour
                     if (currentStage == midPoints[0].map[0] && currentPlayerIndex == midPoints[0].map[1])
                     {
                         //피
-                        player.GetComponent<Player>().maxHP++;
+                        player.GetComponent<Player>().hp = 6;
+                        player.GetComponent<Player>().hpIncreaseText.ShowMaxHPText(new Vector3(0,0.183f,15));
+                        player.GetComponent<Player>().decideRotation(6);
                         setMidPoints(currentStage);
                         setMidPointArrow(currentStage);
                         nokori--;
@@ -892,7 +898,8 @@ public class GameManager : MonoBehaviour
                     if (currentStage == midPoints[1].map[0] && currentPlayerIndex == midPoints[1].map[1])
                     {
                         //뭐로하지
-                        player.GetComponent<Player>().maxinvincible += 0.5f;
+                        player.GetComponent<Player>().maxinvincible += 1f;
+                        player.GetComponent<Player>().hpIncreaseText.ShowInvTimeText(new Vector3(0, 0.183f, 15));
                         setMidPoints(currentStage);
                         setMidPointArrow(currentStage);
                         nokori--;

@@ -30,6 +30,12 @@ public class CubeTower : Games
         {
             Destroy(bullet.gameObject);
         }
+
+        GameObject[] towerupperside = GameObject.FindGameObjectsWithTag("tower");
+        foreach (var bullet in towerupperside)
+        {
+            Destroy(bullet.gameObject);
+        }
         manager.player.GetComponent<Player>().wallSet.SetActive(false);
         manager.player.GetComponent<Player>().canjump = false;
     }
