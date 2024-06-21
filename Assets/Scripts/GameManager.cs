@@ -751,6 +751,9 @@ public class GameManager : MonoBehaviour
 
 
                 player.transform.position = spawnPoints[currentPlayerIndex].map[tmpDir].transform.position;
+                player.GetComponent<Rigidbody>().useGravity = false;
+                player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                player.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
                 isChoosingDirection = true;
                 float elapsedTime = 0f;
                 while (elapsedTime < 0.01f)

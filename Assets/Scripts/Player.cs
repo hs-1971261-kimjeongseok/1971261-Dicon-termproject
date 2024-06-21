@@ -129,12 +129,14 @@ public class Player : MonoBehaviour
 
             if (canjump)
             {
+                this.GetComponent<Rigidbody>().useGravity = true;
                 if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
                 {
                     this.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
                     isGrounded = false; // 점프 중에는 지면에 있지 않음
                 }
             }
+            else { this.GetComponent<Rigidbody>().useGravity = false; }
             
         }
 
