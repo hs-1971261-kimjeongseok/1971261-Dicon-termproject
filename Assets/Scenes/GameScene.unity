@@ -6553,7 +6553,7 @@ MonoBehaviour:
   - {fileID: 157304274802119203, guid: 382be7267b21c5f43ad46d8a965b01d4, type: 3}
   - {fileID: 8701712506393454314, guid: e7b435d5a0fd0b445af79298471b1759, type: 3}
   - {fileID: 3190134964236984305, guid: aa24ced0d0c3e7a4d8d4d4e96b50232f, type: 3}
-  - {fileID: 0}
+  - {fileID: 6473528979529751609, guid: ba8394d46f73a284395a14c03f03ba66, type: 3}
   nokori: 1
   maps:
   - map: 03000000010000000200000004000000
@@ -14923,6 +14923,10 @@ PrefabInstance:
     - target: {fileID: 3256726471435495267, guid: 58a8b320e6fce564481438205ec61b51, type: 3}
       propertyPath: m_Constraints
       value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 3256726471435495267, guid: 58a8b320e6fce564481438205ec61b51, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4331208526899083691, guid: 58a8b320e6fce564481438205ec61b51, type: 3}
       propertyPath: hp

@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
         }
 
         // 새로운 게임을 현재 큐브에 인스턴스화하고 시작
-        GameObject gameInstance = Instantiate(games[14]);
+        GameObject gameInstance = Instantiate(games[15]);
         gameInstance.transform.localScale = Vector3.one;
         gameInstance.transform.position = new Vector3(planePositions[index].position.x, 0, planePositions[index].position.z);
         gameInstance.transform.parent = this.transform;

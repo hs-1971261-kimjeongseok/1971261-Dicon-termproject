@@ -6,7 +6,7 @@ public class Cube : Enemy
 {
     public float speed = 10.0f;
     private Transform target; public Vector3 direction;
-
+    public float destroytime = 2f;
 
     public float acceleration = 2.0f; // 속도 증가율
 
@@ -17,7 +17,7 @@ public class Cube : Enemy
 
     void Start()
     {
-        Destroy(gameObject, 2f); // 5초 후 자동 파괴
+        Destroy(gameObject, destroytime); // 5초 후 자동 파괴
         direction = new Vector3(0,0,0).normalized;
 
 
