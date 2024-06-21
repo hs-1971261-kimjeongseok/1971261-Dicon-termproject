@@ -62,6 +62,9 @@ public class GameManager : MonoBehaviour
 
     private Games currentGame;
 
+    public GameObject optionbutton;
+    public GameObject optionset;
+
     private int nextSpawnpoint = 0;
     int nextDir = 0;
 
@@ -98,7 +101,38 @@ public class GameManager : MonoBehaviour
         array[j] = temp;
     }
 
+    public void showOptions()
+    {
+        PauseAllAudioSources();
+        optionbutton.SetActive(false);
+        optionset.SetActive(true);
+        Time.timeScale = 0f;
+    }
+    public void hideOptions()
+    {
+        ResumeAllAudioSources();
+        optionbutton.SetActive(true);
+        optionset.SetActive(false);
+        Time.timeScale = 1f;
+    }
 
+    private void PauseAllAudioSources()
+    {
+        AudioSource[] audioSources = FindObjectsOfType<AudioSource>();
+        foreach (AudioSource audioSource in audioSources)
+        {
+            audioSource.Pause();
+        }
+    }
+
+    private void ResumeAllAudioSources()
+    {
+        AudioSource[] audioSources = FindObjectsOfType<AudioSource>();
+        foreach (AudioSource audioSource in audioSources)
+        {
+            audioSource.UnPause();
+        }
+    }
     void SetPlayerPosition(int index, bool first = false)
     {
 
@@ -139,6 +173,7 @@ public class GameManager : MonoBehaviour
     }
 
     public bool boss;
+    bool first = true;
     void PlayMusic(int[] indices, bool boss = false)
     {
 
@@ -149,39 +184,44 @@ public class GameManager : MonoBehaviour
         audioSource.volume = 0.08f;
         if (musicoffset[currentStage].offsets[0] > 0) { audioSource.volume = 0.05f; }
 
-        tmp[0].Stop();
-        if (boss) { tmp[0].clip = bossmusics[bossMusicCycle[bossMusicIdx].map[1] + musicoffset[currentStage].offsets[1]]; }
-        else { tmp[0].clip = musics[indices[1] + musicoffset[currentStage].offsets[1]]; }
-        tmp[0].Play();
-        tmp[0].volume = 0.08f;
-        if (musicoffset[currentStage].offsets[1] > 0) { tmp[0].volume = 0.05f; }
-
-        tmp[1].Stop();
-        if (boss) { tmp[1].clip = bossmusics[bossMusicCycle[bossMusicIdx].map[2] + musicoffset[currentStage].offsets[2]]; }
-        else { tmp[1].clip = musics[indices[1] + musicoffset[currentStage].offsets[2]]; }
-        tmp[1].Play();
-        tmp[1].volume = 0.08f;
-        if (musicoffset[currentStage].offsets[2] > 0) { tmp[1].volume = 0.05f; }
-
-        tmp[2].Stop();
-        if (!boss)
+        if (!first)
         {
-            if (music10playing)
+            tmp[0].Stop();
+            if (boss) { tmp[0].clip = bossmusics[bossMusicCycle[bossMusicIdx].map[1] + musicoffset[currentStage].offsets[1]]; }
+            else { tmp[0].clip = musics[indices[1] + musicoffset[currentStage].offsets[1]]; }
+            tmp[0].Play();
+            tmp[0].volume = 0.08f;
+            if (musicoffset[currentStage].offsets[1] > 0) { tmp[0].volume = 0.05f; }
+
+            tmp[1].Stop();
+            if (boss) { tmp[1].clip = bossmusics[bossMusicCycle[bossMusicIdx].map[2] + musicoffset[currentStage].offsets[2]]; }
+            else { tmp[1].clip = musics[indices[1] + musicoffset[currentStage].offsets[2]]; }
+            tmp[1].Play();
+            tmp[1].volume = 0.08f;
+            if (musicoffset[currentStage].offsets[2] > 0) { tmp[1].volume = 0.05f; }
+
+            tmp[2].Stop();
+            if (!boss)
             {
-                tmp[2].clip = musics[10 + musicoffset[currentStage].offsets[3]];
-                music10playing = false;
+                if (music10playing)
+                {
+                    tmp[2].clip = musics[10 + musicoffset[currentStage].offsets[3]];
+                    music10playing = false;
+                }
+                else
+                {
+                    tmp[2].clip = musics[9 + musicoffset[currentStage].offsets[3]];
+                    music10playing = true;
+                }
+                tmp[2].Play();
+                tmp[2].volume = 0.08f;
+                if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
             }
-            else
-            {
-                tmp[2].clip = musics[9 + musicoffset[currentStage].offsets[3]];
-                music10playing = true;
-            }
-            tmp[2].Play();
-            tmp[2].volume = 0.08f;
-            if (musicoffset[currentStage].offsets[3] > 0) { tmp[2].volume = 0.05f; }
+            if (boss) { bossMusicIdx++; }
+            if (bossMusicIdx > 7) { bossMusicIdx = 0; }            
         }
-        if (boss) { bossMusicIdx++; }
-        if (bossMusicIdx > 7) { bossMusicIdx = 0; }
+        else { first = false; }
+        
     }
 
     void Start()
