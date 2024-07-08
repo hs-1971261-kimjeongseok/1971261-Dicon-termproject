@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class Games : MonoBehaviour
 {
+    public GameManager manager;
     public abstract void GameStart();
     public abstract void GameStop();
     // Start is called before the first frame update
